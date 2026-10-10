@@ -1,21 +1,31 @@
+import { ChevronRight, Map as MapIcon } from "lucide-react";
+import Link from "next/link";
+import { TripWizard } from "@/components/trip-wizard";
+
 export default function Home() {
   return (
     <>
-      <div className="pt-4 pb-4">
-        <h1 className="text-2xl font-semibold tracking-tight">Where to go?</h1>
-        <p className="text-sm text-muted-foreground">Hangout, date, or food.</p>
+      <div className="pt-28 pb-10">
+        <h1 className="text-4xl font-bold tracking-tight">
+          Find a place to go.
+        </h1>
       </div>
 
-      <section className="grid aspect-square place-items-center rounded-2xl bg-muted text-sm text-muted-foreground">
-        Map
-      </section>
+      <TripWizard />
 
-      <section className="flex-1 py-4">
-        <h2 className="mb-2 text-sm font-medium text-muted-foreground">
-          Places
-        </h2>
-        <p className="text-sm text-muted-foreground">No places yet.</p>
-      </section>
+      <Link
+        href="/places"
+        className="mt-6 flex items-center gap-3 border-t border-border py-4 font-medium group"
+      >
+        <MapIcon className="size-6 text-primary" aria-hidden />
+        <span className="group-hover:underline underline-offset-4">
+          Browse all places
+        </span>
+        <ChevronRight
+          className="ml-auto size-5 text-muted-foreground"
+          aria-hidden
+        />
+      </Link>
     </>
   );
 }

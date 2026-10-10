@@ -9,10 +9,7 @@ const MAX_MESSAGE = 2000;
 const MAX_CONTACT = 150;
 
 const field =
-  "w-full rounded-[10px] bg-muted px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary aria-invalid:ring-2 aria-invalid:ring-primary";
-
-// Pastel blue is too faint as text on white, so light mode uses navy
-const errorText = "text-primary-foreground dark:text-primary";
+  "w-full rounded-xl bg-muted px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary aria-invalid:ring-2 aria-invalid:ring-primary";
 
 type Values = { message: string; contact: string; company: string };
 
@@ -58,9 +55,7 @@ export function FeedbackForm() {
 
       {sent ? (
         <output>
-          <p className="text-sm text-primary-foreground font-semibold">
-            Thanks for your feedback!
-          </p>
+          <p className="text-sm font-semibold">Thanks for your feedback!</p>
         </output>
       ) : (
         <form
@@ -90,11 +85,9 @@ export function FeedbackForm() {
               id={messageHint}
               className="flex justify-between gap-2 text-xs"
             >
-              <span className={errorText}>{errors.message?.message}</span>
+              <span>{errors.message?.message}</span>
               <span
-                className={
-                  length > MAX_MESSAGE ? errorText : "text-muted-foreground"
-                }
+                className={length > MAX_MESSAGE ? "" : "text-muted-foreground"}
               >
                 {length}/{MAX_MESSAGE}
               </span>
@@ -119,7 +112,7 @@ export function FeedbackForm() {
               })}
             />
             {errors.contact && (
-              <span id={contactError} className={`text-xs ${errorText}`}>
+              <span id={contactError} className="text-xs">
                 {errors.contact.message}
               </span>
             )}
@@ -138,15 +131,13 @@ export function FeedbackForm() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="self-start rounded-[10px] bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground disabled:opacity-60 hover:cursor-pointer"
+            className="self-start rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground disabled:opacity-60 hover:cursor-pointer"
           >
             {isSubmitting ? "Sending…" : "Send feedback"}
           </button>
 
           {errors.root?.server && (
-            <output className={`text-sm ${errorText}`}>
-              {errors.root.server.message}
-            </output>
+            <output className="text-sm">{errors.root.server.message}</output>
           )}
         </form>
       )}

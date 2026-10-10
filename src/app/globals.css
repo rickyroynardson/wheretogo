@@ -3,13 +3,14 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
+  /* Neutral grays; pastel blue (primary) is for accents only */
   --background: #ffffff;
   --foreground: #171717;
   --primary: #a7c7e7;
   --primary-foreground: #1e3a5f;
-  --muted: #eef4fb;
-  --muted-foreground: #64748b;
-  --border: #e6e8ec;
+  --muted: #f5f5f5;
+  --muted-foreground: #737373;
+  --border: #e5e5e5;
 }
 
 @theme inline {
@@ -24,14 +25,27 @@
 }
 
 .dark {
-  --background: #1f2733;
-  --foreground: #e6edf5;
-  --muted: #2b3544;
-  --muted-foreground: #94a3b8;
-  --border: #354051;
+  /* Neutral grays, no blue tint */
+  --background: #171717;
+  --foreground: #fafafa;
+  --muted: #262626;
+  --muted-foreground: #a3a3a3;
+  --border: #2e2e2e;
   color-scheme: dark;
 }
 
 body {
   color: var(--foreground);
+}
+
+/* MapLibre popups default to white; match our theme.
+   Extra parent selector beats maplibre-gl.css, which loads after this file. */
+.maplibregl-popup .maplibregl-popup-content {
+  background: var(--background);
+  color: var(--foreground);
+  border-radius: 12px;
+  font-family: var(--font-sans);
+}
+.maplibregl-popup .maplibregl-popup-tip {
+  display: none;
 }

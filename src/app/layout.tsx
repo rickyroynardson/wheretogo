@@ -8,10 +8,13 @@ import "./globals.css";
 const atkinson = Atkinson_Hyperlegible_Next({
   variable: "--font-atkinson",
   subsets: ["latin"],
+  // Next has no metrics for this font, so it can't size-match a fallback
+  adjustFontFallback: false,
+  fallback: ["system-ui", "sans-serif"],
 });
 
 export const metadata: Metadata = {
-  title: "WhereToGo",
+  title: { default: "WhereToGo", template: "%s · WhereToGo" },
   description: "Pick a spot for hangout, date, or food.",
   icons: "/logo.svg",
 };
