@@ -8,8 +8,9 @@ import { sendFeedback } from "@/app/actions/feedback";
 const MAX_MESSAGE = 2000;
 const MAX_CONTACT = 150;
 
+// 16px text: iOS Safari zooms the page into any focused field smaller than that
 const field =
-  "w-full rounded-xl bg-muted px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary aria-invalid:ring-2 aria-invalid:ring-primary";
+  "w-full rounded-xl bg-muted px-3 py-2.5 text-base outline-none focus:ring-2 focus:ring-primary aria-invalid:ring-2 aria-invalid:ring-primary";
 
 type Values = { message: string; contact: string; company: string };
 

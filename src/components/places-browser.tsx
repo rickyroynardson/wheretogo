@@ -309,7 +309,7 @@ export function PlacesBrowser({ places }: { places: Place[] }) {
                 value={query}
                 onChange={(e) => setParams({ q: e.target.value })}
                 placeholder="Search places"
-                className="w-full rounded-xl bg-muted py-2.5 pr-3 pl-9 text-sm outline-none placeholder:text-muted-foreground focus:ring-2 focus:ring-primary"
+                className="w-full rounded-xl bg-muted py-2.5 pr-3 pl-9 text-base outline-none placeholder:text-muted-foreground focus:ring-2 focus:ring-primary"
               />
             </label>
             <button

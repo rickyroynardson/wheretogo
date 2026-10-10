@@ -273,7 +273,7 @@ export function TripWizard() {
           <label className="relative block pb-3">
             <span className="sr-only">Search areas</span>
             <Search
-              className="pointer-events-none absolute top-2.5 left-3 size-4 text-muted-foreground"
+              className="pointer-events-none absolute top-3 left-3 size-4 text-muted-foreground"
               aria-hidden
             />
             <input
@@ -306,7 +306,7 @@ export function TripWizard() {
                 }
               }}
               placeholder="Search an area"
-              className="w-full rounded-xl bg-muted py-2 pr-3 pl-9 text-sm outline-none placeholder:text-muted-foreground focus:ring-2 focus:ring-primary"
+              className="w-full rounded-xl bg-muted py-2 pr-3 pl-9 text-base outline-none placeholder:text-muted-foreground focus:ring-2 focus:ring-primary"
             />
           </label>
           {/* Nothing listed until the user types; recents fill the gap */}
