@@ -37,7 +37,14 @@ const place = z
     // Required: needed for the map and for URLs
     id: z.number().int().positive(),
     name: z.string().min(1),
-    category: z.enum(Object.keys(CATEGORIES) as [Category, ...Category[]]),
+    // First one is the main category: pin icon, first badge, back link
+    categories: z
+      .array(z.enum(Object.keys(CATEGORIES) as [Category, ...Category[]]))
+      .min(1)
+      .refine(
+        (list) => new Set(list).size === list.length,
+        "Duplicate category",
+      ),
     lat: z.number().min(-90).max(90),
     lng: z.number().min(-180).max(180),
     // Optional: only rendered when present
@@ -46,7 +53,23 @@ const place = z
       .startsWith("/")
       .or(z.url({ protocol: /^https$/ }))
       .optional(),
+    // Who took the photo, shown as "Photo by …" under the image
+    imageCredit: z
+      .object({
+        name: z.string().min(1),
+        url: z.url({ protocol: /^https$/ }).optional(),
+      })
+      .strict()
+      .optional(),
     address: z.string().min(1).optional(),
+    // Google Maps listing id (from Google's Place ID Finder); Navigate then
+    // opens the actual listing instead of a dropped pin
+    googlePlaceId: z
+      .string()
+      .regex(/^[A-Za-z0-9_-]+$/, "Copy the id only, like ChIJ...")
+      .optional(),
+    // Website or social profile, shown as the button next to Navigate
+    link: z.url({ protocol: /^https$/ }).optional(),
     description: z.string().min(1).optional(),
     // Hours are in this timezone (the place's local time)
     hours: hours.optional(),
@@ -57,6 +80,10 @@ const place = z
   .refine((p) => !p.hours || p.timezone, {
     message: "Places with hours need a timezone",
     path: ["timezone"],
+  })
+  .refine((p) => !p.imageCredit || p.image, {
+    message: "imageCredit needs an image",
+    path: ["imageCredit"],
   });
 
 export type Place = z.infer<typeof place>;

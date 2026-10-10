@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { MotionConfig, motion } from "motion/react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import { Drawer } from "@/components/drawer";
 import { TimePicker } from "@/components/time-picker";
 import { type Area, findArea, searchAreas } from "@/data/areas";
@@ -135,6 +135,9 @@ export function TripWizard() {
   }
   const query = areaQuery.trim();
   const matches = searchAreas(query);
+  // Highlighted result: Enter (the keyboard's Search key) picks it
+  const [active, setActive] = useState(0);
+  const listId = useId();
 
   return (
     // reducedMotion="user": no movement for people with reduce-motion on
@@ -276,7 +279,32 @@ export function TripWizard() {
             <input
               type="search"
               value={areaQuery}
-              onChange={(e) => setAreaQuery(e.target.value)}
+              onChange={(e) => {
+                setAreaQuery(e.target.value);
+                setActive(0);
+              }}
+              // Combobox: focus stays here; arrows move the highlight, Enter
+              // picks. (iOS's keyboard arrows only hop between form fields.)
+              role="combobox"
+              aria-autocomplete="list"
+              aria-expanded={matches.length > 0}
+              aria-controls={listId}
+              aria-activedescendant={
+                matches[active] ? `${listId}-${matches[active].id}` : undefined
+              }
+              enterKeyHint="search"
+              onKeyDown={(e) => {
+                if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+                  e.preventDefault();
+                  const step = e.key === "ArrowDown" ? 1 : -1;
+                  setActive((i) =>
+                    Math.min(Math.max(i + step, 0), matches.length - 1),
+                  );
+                } else if (e.key === "Enter" && matches[active]) {
+                  e.preventDefault();
+                  pickArea(matches[active]);
+                }
+              }}
               placeholder="Search an area"
               className="w-full rounded-xl bg-muted py-2 pr-3 pl-9 text-sm outline-none placeholder:text-muted-foreground focus:ring-2 focus:ring-primary"
             />
@@ -308,7 +336,13 @@ export function TripWizard() {
 
           {query &&
             (matches.length > 0 ? (
-              <AreaList areas={matches} icon={MapPin} onPick={pickArea} />
+              <AreaList
+                areas={matches}
+                icon={MapPin}
+                onPick={pickArea}
+                id={listId}
+                active={active}
+              />
             ) : (
               <p className="py-3 text-sm text-muted-foreground">
                 No areas match “{query}”. Try a nearby neighbourhood.
@@ -340,37 +374,48 @@ function AreaList({
   areas,
   icon: Icon,
   onPick,
+  id,
+  active,
 }: {
   areas: Area[];
   icon: LucideIcon;
   onPick: (area: Area) => void;
+  // Set for search results (driven by the search box); recents leave them out
+  id?: string;
+  active?: number;
 }) {
   return (
-    <ul className="flex flex-col">
-      {areas.map((a) => (
-        <li key={a.id}>
-          <button
-            type="button"
-            onClick={() => onPick(a)}
-            className="flex w-full cursor-pointer items-center gap-3 border-b border-border py-3 text-left text-sm last:border-b-0"
-          >
-            <Icon
-              className="size-4 shrink-0 text-muted-foreground"
-              aria-hidden
-            />
-            <span className="flex flex-col">
-              {a.name}
-              {/* Other names explain why "Jodoh" finds Nagoya */}
-              {a.aliases && (
-                <span className="text-xs text-muted-foreground">
-                  {a.aliases.join(", ")}
-                </span>
-              )}
-            </span>
-          </button>
-        </li>
+    <div id={id} role="listbox" aria-label="Areas" className="flex flex-col">
+      {areas.map((a, i) => (
+        <div
+          key={a.id}
+          id={id ? `${id}-${a.id}` : undefined}
+          role="option"
+          aria-selected={i === active}
+          // Search results are driven from the search box; recents get Tab
+          tabIndex={id ? -1 : 0}
+          onClick={() => onPick(a)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              onPick(a);
+            }
+          }}
+          className={`-mx-2 flex cursor-pointer items-center gap-3 rounded-lg border-b border-border px-2 py-3 text-sm outline-none last:border-b-0 focus-visible:ring-2 focus-visible:ring-primary ${id && i === active ? "bg-muted" : ""}`}
+        >
+          <Icon className="size-4 shrink-0 text-muted-foreground" aria-hidden />
+          <span className="flex flex-col">
+            {a.name}
+            {/* Other names explain why "Jodoh" finds Nagoya */}
+            {a.aliases && (
+              <span className="text-xs text-muted-foreground">
+                {a.aliases.join(", ")}
+              </span>
+            )}
+          </span>
+        </div>
       ))}
-    </ul>
+    </div>
   );
 }
 

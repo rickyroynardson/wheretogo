@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
 import type { Hours } from "@/data/places";
 import { openStatus, type OpenStatus as Status } from "@/lib/opening";
 
@@ -10,9 +11,12 @@ export function OpenStatus({
   hours,
   timezone,
   at,
+  badge = false,
 }: {
   hours: Hours;
   timezone: string;
+  // Pill style for the details page: blue when open, gray when closed
+  badge?: boolean;
   // A chosen leaving time; without it, status follows the live clock
   at?: Date;
 }) {
@@ -27,6 +31,16 @@ export function OpenStatus({
   }, [hours, timezone, at]);
 
   if (!status) return null;
+
+  if (badge) {
+    return (
+      <span
+        className={`rounded-full px-2.5 py-1 text-xs font-medium ${status.open ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}
+      >
+        {status.label}
+      </span>
+    );
+  }
 
   return (
     <span
@@ -57,4 +71,22 @@ export function LocalTimeNote({ timezone }: { timezone: string }) {
       Times are local to the place ({timezone.replace("_", " ")})
     </p>
   );
+}
+
+// Open status at the trip's leaving time (?at=…) when one was chosen
+export function TripOpenStatus({
+  hours,
+  timezone,
+  badge,
+}: {
+  hours: Hours;
+  timezone: string;
+  badge?: boolean;
+}) {
+  const atParam = useSearchParams().get("at");
+  const at = useMemo(() => {
+    const date = atParam ? new Date(atParam) : null;
+    return date && !Number.isNaN(date.getTime()) ? date : undefined;
+  }, [atParam]);
+  return <OpenStatus hours={hours} timezone={timezone} at={at} badge={badge} />;
 }

@@ -1,6 +1,7 @@
 // Client-safe constants. Keep zod and places.json out of this file so it can
 // be imported by client components without bloating the browser bundle.
 import {
+  CakeSlice,
   Coffee,
   type LucideIcon,
   ShoppingBag,
@@ -16,10 +17,17 @@ export const CATEGORIES = {
     plural: "Restaurants",
     icon: UtensilsCrossed,
   },
+  // Coffee, tea, brunch; "Café" rather than "Coffee Shop" so cake places fit
   cafe: {
-    label: "Coffee Shop",
-    plural: "Coffee Shops",
+    label: "Café",
+    plural: "Cafés",
     icon: Coffee,
+  },
+  // Patisseries, bakeries, ice cream, dessert bars
+  dessert: {
+    label: "Dessert",
+    plural: "Desserts",
+    icon: CakeSlice,
   },
   mall: {
     label: "Mall",

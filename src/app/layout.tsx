@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Atkinson_Hyperlegible_Next } from "next/font/google";
 import Script from "next/script";
+import { NavigationTracker } from "@/components/back-button";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import "./globals.css";
@@ -27,6 +28,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col bg-background">
+        <NavigationTracker />
         <div className="mx-auto flex w-full max-w-140 flex-1 flex-col px-5">
           <Header />
           <main className="flex flex-1 flex-col">{children}</main>

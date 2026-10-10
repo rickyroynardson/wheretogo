@@ -3,7 +3,6 @@
 import {
   ChevronDown,
   ChevronRight,
-  MapPin,
   Search,
   SlidersHorizontal,
   X,
@@ -19,6 +18,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { useTripQuery } from "@/components/back-button";
 import { OpenStatus } from "@/components/open-status";
 import { PlacesMap } from "@/components/places-map";
 import { findArea } from "@/data/areas";
@@ -156,7 +156,7 @@ export function PlacesBrowser({ places }: { places: Place[] }) {
   const available = useMemo(
     () =>
       (Object.keys(CATEGORIES) as Category[]).filter((c) =>
-        places.some((p) => p.category === c),
+        places.some((p) => p.categories.includes(c)),
       ),
     [places],
   );
@@ -170,7 +170,11 @@ export function PlacesBrowser({ places }: { places: Place[] }) {
         km: origin ? distanceKm(origin, place) : null,
       }))
       .filter(({ place, km }) => {
-        if (categories.length && !categories.includes(place.category)) {
+        // A place matches if any of its categories is selected
+        if (
+          categories.length &&
+          !place.categories.some((c) => categories.includes(c))
+        ) {
           return false;
         }
         if (status) {
@@ -206,7 +210,7 @@ export function PlacesBrowser({ places }: { places: Place[] }) {
     (categories.length ? 1 : 0) + (status ? 1 : 0) + (within ? 1 : 0);
   const filtered = query.trim() !== "" || activeFilters > 0;
 
-  // "Coffee Shops & Malls" when categories are picked, else "All places"
+  // "Cafés & Malls" when categories are picked, else "All places"
   const title = categories.length
     ? new Intl.ListFormat("en", { type: "conjunction" }).format(
         categories.map((c) => CATEGORIES[c].plural),
@@ -224,7 +228,7 @@ export function PlacesBrowser({ places }: { places: Place[] }) {
   );
 
   const mapCategories = available.filter((c) =>
-    matches.some(({ place }) => place.category === c),
+    matches.some(({ place }) => place.categories.includes(c)),
   );
 
   const clearAll = () =>
@@ -687,12 +691,14 @@ function PlaceItem({
   distance?: string;
   at: Date | null;
 }) {
-  const { icon: Icon, label } = CATEGORIES[place.category];
+  const tripQuery = useTripQuery();
+  const { icon: Icon } = CATEGORIES[place.categories[0]];
+  const label = place.categories.map((c) => CATEGORIES[c].label).join(" · ");
 
   return (
     <li className="border-b border-border last:border-b-0">
       <Link
-        href={`/places/${place.id}`}
+        href={`/places/${place.id}${tripQuery}`}
         className="group flex items-center gap-3 py-4"
       >
         {place.image ? (
@@ -713,10 +719,10 @@ function PlaceItem({
 
         <div className="flex min-w-0 flex-1 flex-col gap-1">
           <div>
-            <h2 className="font-semibold group-hover:underline">
+            <h2 className="text-lg font-semibold group-hover:underline underline-offset-4">
               {place.name}
             </h2>
-            <p className="flex flex-wrap gap-x-2 text-xs text-muted-foreground">
+            <p className="flex flex-wrap gap-x-2 text-sm text-muted-foreground">
               {label}
               {distance && <span>{distance} away</span>}
               {place.hours && place.timezone && (
@@ -730,10 +736,7 @@ function PlaceItem({
           </div>
 
           {place.address && (
-            <p className="flex items-start gap-1 text-sm text-muted-foreground">
-              <MapPin className="mt-0.5 size-3.5 shrink-0" aria-hidden />
-              {place.address}
-            </p>
+            <p className="text-xs text-muted-foreground">{place.address}</p>
           )}
 
           {place.description && (

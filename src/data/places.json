@@ -1,1 +1,46 @@
-[]
+[
+  {
+    "id": 1,
+    "name": "Mula Patisserie",
+    "image": "/images/places/1.jpg",
+    "imageCredit": { "name": "Business owner" },
+    "categories": ["dessert", "restaurant"],
+    "lat": 1.1247331283050073,
+    "lng": 104.04736901534149,
+    "address": "Jl. Ruko Greenland No.3A blok C, Tlk. Tering, Kec. Batam Kota, Kota Batam",
+    "googlePlaceId": "GpEuuuTSyDPnVTRP8",
+    "hours": {
+      "mon": ["10:00-22:00"],
+      "tue": ["10:00-22:00"],
+      "wed": ["10:00-22:00"],
+      "thu": ["10:00-22:00"],
+      "fri": ["10:00-22:00"],
+      "sat": ["10:00-22:00"],
+      "sun": ["10:00-22:00"]
+    },
+    "timezone": "Asia/Jakarta",
+    "link": "https://www.instagram.com/mulapatisserie/"
+  },
+  {
+    "id": 2,
+    "name": "Muso Art Cafe",
+    "image": "/images/places/2.jpg",
+    "imageCredit": { "name": "vegankuntz" },
+    "categories": ["cafe"],
+    "lat": 1.125419403004467,
+    "lng": 104.0302293,
+    "address": "Komp. Ruko Palm Spring, Blok E / 104, Taman Baloi, Kec. Batam Kota, Kota Batam",
+    "googlePlaceId": "8aRsRHKCgb5GBrTW9",
+    "hours": {
+      "mon": ["10:00-22:00"],
+      "tue": ["10:00-23:00"],
+      "wed": ["10:00-23:00"],
+      "thu": ["10:00-23:00"],
+      "fri": ["10:00-23:30"],
+      "sat": ["10:00-23:30"],
+      "sun": ["10:00-23:00"]
+    },
+    "timezone": "Asia/Jakarta",
+    "link": "https://www.instagram.com/musoartcafe.id/"
+  }
+]

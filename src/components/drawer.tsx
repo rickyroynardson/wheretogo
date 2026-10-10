@@ -76,7 +76,7 @@ export function Drawer({
           <div className="mx-auto h-1.5 w-10 rounded-full bg-border" />
           <h2 className="pt-3 text-lg font-semibold">{title}</h2>
         </div>
-        <div className="overflow-y-auto px-5 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
+        <div className="overflow-y-auto px-5 pt-1 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
           {children}
         </div>
       </div>

@@ -16,7 +16,7 @@ export const INTENTS = [
     id: "coffee",
     label: "Coffee or a chill spot",
     icon: Coffee,
-    categories: ["cafe"],
+    categories: ["cafe", "dessert"],
   },
   {
     id: "hangout",
@@ -28,6 +28,6 @@ export const INTENTS = [
     id: "eat",
     label: "Something to eat",
     icon: Utensils,
-    categories: ["restaurant", "cafe"],
+    categories: ["restaurant", "cafe", "dessert"],
   },
 ] satisfies Intent[];

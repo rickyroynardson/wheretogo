@@ -1,14 +1,17 @@
 "use client";
 
 import "maplibre-gl/dist/maplibre-gl.css";
+import { ChevronRight } from "lucide-react";
 import type {
   Map as MapInstance,
   Marker as MarkerClass,
   Popup as PopupClass,
 } from "maplibre-gl";
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { useTripQuery } from "@/components/back-button";
 import { CATEGORIES } from "@/data/constants";
 import type { Place } from "@/data/places";
 import { distanceKm, formatDistance } from "@/lib/distance";
@@ -66,6 +69,7 @@ export function PlacesMap({
     originRef.current = origin;
   }, [origin]);
   const [slots, setSlots] = useState<Slot[]>([]);
+  const tripQuery = useTripQuery();
   const [me, setMe] = useState<Point | null>(null);
   // Set once the map exists; markers sync against it without rebuilding it
   const [ready, setReady] = useState<{
@@ -168,7 +172,14 @@ export function PlacesMap({
       markers.push(
         new Marker({ element: pin, anchor: "bottom" })
           .setLngLat([place.lng, place.lat])
-          .setPopup(new Popup({ offset: POPUP_OFFSET }).setDOMContent(popup))
+          .setPopup(
+            // No X: tapping the map or another pin closes it
+            new Popup({
+              offset: POPUP_OFFSET,
+              closeButton: false,
+              maxWidth: "none",
+            }).setDOMContent(popup),
+          )
           .addTo(map),
       );
       return { place, pin, popup };
@@ -188,17 +199,20 @@ export function PlacesMap({
         className={`overflow-hidden rounded-2xl bg-muted ${className}`}
       />
       {slots.map(({ place, pin, popup }) => {
-        const { icon: Icon, label } = CATEGORIES[place.category];
+        // Pin shows the main (first) category; popup lists them all
+        const { icon: Icon } = CATEGORIES[place.categories[0]];
+        const label = place.categories
+          .map((c) => CATEGORIES[c].label)
+          .join(" · ");
         // Distances from the chosen area if any, else from the device
         const from = origin ?? me;
         const distance = from ? formatDistance(distanceKm(from, place)) : null;
-        // Unknown hours stay blue: we can't say it's closed
-        const closed = Boolean(
-          time &&
-            place.hours &&
-            place.timezone &&
-            !openStatus(place.hours, place.timezone, time).open,
-        );
+        // Unknown hours: no status shown, pin stays blue
+        const status =
+          time && place.hours && place.timezone
+            ? openStatus(place.hours, place.timezone, time)
+            : null;
+        const closed = status ? !status.open : false;
         return [
           createPortal(
             <button
@@ -241,20 +255,47 @@ export function PlacesMap({
             `${place.id}-pin`,
           ),
           createPortal(
-            <div className="flex flex-col">
-              <span className="font-semibold">{place.name}</span>
-              <span className="text-xs text-muted-foreground">
-                {[label, closed && "Closed", distance && `${distance} away`]
-                  .filter(Boolean)
-                  .join(" · ")}
+            // The whole card opens the place; the map closes it
+            <Link
+              href={`/places/${place.id}${tripQuery}`}
+              className="flex w-64 items-center gap-3 p-3"
+            >
+              {place.image ? (
+                <Image
+                  src={place.image}
+                  alt=""
+                  width={48}
+                  height={48}
+                  unoptimized={place.image.startsWith("https://")}
+                  className="size-12 shrink-0 rounded-lg object-cover"
+                />
+              ) : (
+                <span className="grid size-12 shrink-0 place-items-center rounded-lg bg-muted text-primary">
+                  <Icon className="size-5" strokeWidth={2.25} aria-hidden />
+                </span>
+              )}
+              <span className="flex min-w-0 flex-1 flex-col">
+                <span className="truncate text-sm font-semibold">
+                  {place.name}
+                </span>
+                <span className="truncate text-xs text-muted-foreground">
+                  {[label, distance && `${distance} away`]
+                    .filter(Boolean)
+                    .join(" · ")}
+                </span>
+                {status && (
+                  <span
+                    className={`truncate text-xs font-medium ${status.open ? "text-primary" : "text-muted-foreground"}`}
+                  >
+                    {status.label}
+                  </span>
+                )}
               </span>
-              <Link
-                href={`/places/${place.id}`}
-                className="mt-1 text-xs font-semibold underline underline-offset-2"
-              >
-                View details
-              </Link>
-            </div>,
+              <ChevronRight
+                className="size-4 shrink-0 text-muted-foreground"
+                aria-hidden
+              />
+            </Link>,
             popup,
             `${place.id}-popup`,
           ),
