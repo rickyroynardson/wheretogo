@@ -3,12 +3,14 @@
     "id": 1,
     "name": "Mula Patisserie",
     "image": "/images/places/1.jpg",
-    "imageCredit": { "name": "Business owner" },
+    "imageCredit": {
+      "name": "Business owner"
+    },
     "categories": ["dessert", "restaurant"],
     "lat": 1.1247331283050073,
     "lng": 104.04736901534149,
+    "googlePlaceId": "ChIJSQdIF9OJ2TERCgxDKVRfhns",
     "address": "Jl. Ruko Greenland No.3A blok C, Tlk. Tering, Kec. Batam Kota, Kota Batam",
-    "googlePlaceId": "GpEuuuTSyDPnVTRP8",
     "hours": {
       "mon": ["10:00-22:00"],
       "tue": ["10:00-22:00"],
@@ -25,12 +27,14 @@
     "id": 2,
     "name": "Muso Art Cafe",
     "image": "/images/places/2.jpg",
-    "imageCredit": { "name": "vegankuntz" },
+    "imageCredit": {
+      "name": "vegankuntz"
+    },
     "categories": ["cafe"],
     "lat": 1.125419403004467,
     "lng": 104.0302293,
+    "googlePlaceId": "ChIJ_ZAtqSmJ2TER6bPpiIOnzsI",
     "address": "Komp. Ruko Palm Spring, Blok E / 104, Taman Baloi, Kec. Batam Kota, Kota Batam",
-    "googlePlaceId": "8aRsRHKCgb5GBrTW9",
     "hours": {
       "mon": ["10:00-22:00"],
       "tue": ["10:00-23:00"],
@@ -42,5 +46,177 @@
     },
     "timezone": "Asia/Jakarta",
     "link": "https://www.instagram.com/musoartcafe.id/"
+  },
+  {
+    "id": 3,
+    "name": "Grand Batam Mall",
+    "image": "/images/places/3.jpeg",
+    "imageCredit": {
+      "name": "Business owner"
+    },
+    "categories": ["mall"],
+    "lat": 1.1353388,
+    "lng": 104.0077975,
+    "googlePlaceId": "ChIJJbxU-5WJ2TERxAjKDa3YwOk",
+    "address": "Jl. Pembangunan, Batu Selicin, Lubuk Baja, Kota Batam",
+    "description": "Big mall in the Nagoya area with fashion, a cinema and plenty of food options.",
+    "hours": {
+      "mon": ["10:00-22:00"],
+      "tue": ["10:00-22:00"],
+      "wed": ["10:00-22:00"],
+      "thu": ["10:00-22:00"],
+      "fri": ["10:00-22:00"],
+      "sat": ["10:00-22:00"],
+      "sun": ["10:00-22:00"]
+    },
+    "timezone": "Asia/Jakarta",
+    "link": "https://www.instagram.com/grandbatam/"
+  },
+  {
+    "id": 4,
+    "name": "BCS Mall",
+    "image": "/images/places/4.png",
+    "imageCredit": {
+      "name": "Business owner"
+    },
+    "categories": ["mall"],
+    "lat": 1.132737,
+    "lng": 104.0102963,
+    "googlePlaceId": "ChIJi9z06QuJ2TERIUtp9YifElU",
+    "address": "Jl. Bunga Raya, Batu Selicin, Lubuk Baja, Kota Batam",
+    "description": "Batam City Square, with a food court, cinema, bowling alley and family karaoke.",
+    "hours": {
+      "mon": ["10:00-22:00"],
+      "tue": ["10:00-22:00"],
+      "wed": ["10:00-22:00"],
+      "thu": ["10:00-22:00"],
+      "fri": ["10:00-22:00"],
+      "sat": ["10:00-22:00"],
+      "sun": ["10:00-22:00"]
+    },
+    "timezone": "Asia/Jakarta"
+  },
+  {
+    "id": 5,
+    "name": "Nagoya Hill",
+    "image": "/images/places/5.jpeg",
+    "imageCredit": {
+      "name": "Business owner"
+    },
+    "categories": ["mall"],
+    "lat": 1.1463397,
+    "lng": 104.0126334,
+    "googlePlaceId": "ChIJWStZ2w-J2TERzK2hywUfw_s",
+    "address": "Jl. Teuku Umar, Lubuk Baja Kota, Lubuk Baja, Kota Batam",
+    "description": "Long-running shopping centre in the heart of Nagoya, with a hypermarket and many shops.",
+    "hours": {
+      "mon": ["10:00-22:00"],
+      "tue": ["10:00-22:00"],
+      "wed": ["10:00-22:00"],
+      "thu": ["10:00-22:00"],
+      "fri": ["10:00-22:00"],
+      "sat": ["10:00-22:00"],
+      "sun": ["10:00-22:00"]
+    },
+    "timezone": "Asia/Jakarta"
+  },
+  {
+    "id": 6,
+    "name": "One Batam Mall",
+    "image": "/images/places/6.jpeg",
+    "imageCredit": {
+      "name": "Business owner"
+    },
+    "categories": ["mall"],
+    "lat": 1.1301517,
+    "lng": 104.0456188,
+    "googlePlaceId": "ChIJjXYWi-uJ2TERDRGgEAxYkhw",
+    "address": "Jl. Engku Putri, Teluk Tering, Batam Kota, Kota Batam",
+    "description": "Newer mall in Batam Centre, known for the city's first ice skating rink.",
+    "hours": {
+      "mon": ["10:00-22:00"],
+      "tue": ["10:00-22:00"],
+      "wed": ["10:00-22:00"],
+      "thu": ["10:00-22:00"],
+      "fri": ["10:00-22:00"],
+      "sat": ["10:00-22:00"],
+      "sun": ["10:00-22:00"]
+    },
+    "timezone": "Asia/Jakarta",
+    "link": "https://www.instagram.com/onebatammall/"
+  },
+  {
+    "id": 7,
+    "name": "Mega Mall Batam Centre",
+    "image": "/images/places/7.jpg",
+    "imageCredit": {
+      "name": "Business owner"
+    },
+    "categories": ["mall"],
+    "lat": 1.1291863,
+    "lng": 104.0559897,
+    "googlePlaceId": "ChIJa79jQA-J2TERfO2f9xml320",
+    "address": "Jl. Engku Putri No.1, Belian, Batam Kota, Kota Batam",
+    "description": "Mall next to the Batam Centre ferry terminal.",
+    "hours": {
+      "mon": ["10:00-22:00"],
+      "tue": ["10:00-22:00"],
+      "wed": ["10:00-22:00"],
+      "thu": ["10:00-22:00"],
+      "fri": ["10:00-22:00"],
+      "sat": ["10:00-22:00"],
+      "sun": ["10:00-22:00"]
+    },
+    "timezone": "Asia/Jakarta"
+  },
+  {
+    "id": 8,
+    "name": "Joyi Bakes",
+    "image": "/images/places/8.jpeg",
+    "imageCredit": {
+      "name": "Joey"
+    },
+    "categories": ["dessert", "cafe"],
+    "lat": 1.128098,
+    "lng": 104.040028,
+    "googlePlaceId": "ChIJLdus-H6J2TERsnh3vSEUIYA",
+    "address": "Jl. Mitra Raya 2 No.1 & 2 Blok B, Teluk Tering, Batam Kota, Kota Batam",
+    "description": "Dessert cafe known for bingsu, honey toast, tiramisu and cheesecake.",
+    "hours": {
+      "mon": ["09:00-22:00"],
+      "tue": ["09:00-22:00"],
+      "wed": ["09:00-22:00"],
+      "thu": ["09:00-22:00"],
+      "fri": ["09:00-22:00"],
+      "sat": ["09:00-22:00"],
+      "sun": ["09:00-22:00"]
+    },
+    "timezone": "Asia/Jakarta",
+    "link": "https://www.instagram.com/joyibakes/"
+  },
+  {
+    "id": 9,
+    "name": "Odd by Common Space",
+    "image": "/images/places/9.jpeg",
+    "imageCredit": {
+      "name": "Business owner"
+    },
+    "categories": ["cafe"],
+    "lat": 1.1247331283050073,
+    "lng": 104.04736901534149,
+    "googlePlaceId": "ChIJf5ug8DSJ2TERrD0NCh_TAFw",
+    "address": "Ruko Greenland Blok T No.4, Jl. Gurindam, Teluk Tering, Batam Kota, Kota Batam",
+    "description": "Two-floor cafe from the Common Space team, with coffee on tap.",
+    "hours": {
+      "mon": ["08:00-22:00"],
+      "tue": ["08:00-22:00"],
+      "wed": ["08:00-22:00"],
+      "thu": ["08:00-22:00"],
+      "fri": ["08:00-22:00"],
+      "sat": ["08:00-22:00"],
+      "sun": ["08:00-22:00"]
+    },
+    "timezone": "Asia/Jakarta",
+    "link": "https://www.instagram.com/oddbycs/"
   }
 ]
