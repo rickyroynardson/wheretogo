@@ -33,15 +33,15 @@ export function BackButton({
   return (
     <Link
       href={fallback}
-      aria-label={label}
       onClick={(e) => {
         if (!navigatedInApp) return;
         e.preventDefault();
         router.back();
       }}
-      className="-ml-1.5 self-start text-foreground"
+      className="-ml-1.5 flex items-center self-start text-sm font-medium text-muted-foreground"
     >
-      <ChevronLeft className="size-7" aria-hidden />
+      <ChevronLeft className="size-6" aria-hidden />
+      {label}
     </Link>
   );
 }

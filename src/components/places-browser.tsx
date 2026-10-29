@@ -278,7 +278,7 @@ export function PlacesBrowser({ places }: { places: Place[] }) {
       <div
         role="tablist"
         aria-label="View"
-        className="mb-4 inline-grid grid-cols-2 self-start rounded-xl bg-muted p-1 text-sm font-medium"
+        className="mb-4 grid grid-cols-2 rounded-xl bg-muted p-1 text-sm font-medium"
       >
         {(["map", "list"] as const).map((t) => (
           <button
@@ -287,7 +287,7 @@ export function PlacesBrowser({ places }: { places: Place[] }) {
             role="tab"
             aria-selected={view === t}
             onClick={() => setParams({ view: t === "map" ? null : t })}
-            className="cursor-pointer rounded-lg px-5 py-1.5 capitalize text-muted-foreground aria-selected:bg-background aria-selected:text-foreground aria-selected:shadow-sm"
+            className="cursor-pointer rounded-lg py-1.5 capitalize text-muted-foreground aria-selected:bg-background aria-selected:text-foreground aria-selected:shadow-sm"
           >
             {t}
           </button>
