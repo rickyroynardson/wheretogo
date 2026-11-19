@@ -12,10 +12,14 @@ export function distanceKm(a: Point, b: Point) {
   return 2 * 6371 * Math.asin(Math.sqrt(h));
 }
 
-// 850 m, 1.2 km, 12 km
-export function formatDistance(km: number) {
+// 850 m, 1.2 km, 12 km. `locale` picks the decimal mark ("1,2 km" in id-ID).
+export function formatDistance(km: number, locale = "en-GB") {
   const meters = Math.round(km * 100) * 10;
   if (meters < 1000) return `${meters} m`;
-  if (km < 10) return `${km.toFixed(1)} km`;
-  return `${Math.round(km)} km`;
+  const digits = km < 10 ? 1 : 0;
+  const value = new Intl.NumberFormat(locale, {
+    minimumFractionDigits: digits,
+    maximumFractionDigits: digits,
+  }).format(km);
+  return `${value} km`;
 }

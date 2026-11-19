@@ -5,7 +5,19 @@ const DAY = 24 * 60;
 const WEEK = 7 * DAY;
 const SHORT_DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
-export type OpenStatus = { open: boolean; label: string };
+export type Day = (typeof DAYS)[number];
+
+// Structured so each language can word it its own way (see i18n dictionaries)
+export type OpenStatus =
+  | { kind: "always"; open: true }
+  | { kind: "open"; open: true; closes: string }
+  | { kind: "never"; open: false }
+  | {
+      kind: "closed";
+      open: false;
+      opens: string;
+      on: "today" | "tomorrow" | Day;
+    };
 
 // Minutes since Monday 00:00, in the place's timezone
 function weekMinute(now: Date, timeZone: string) {
@@ -70,9 +82,9 @@ export function openStatus(
   now = new Date(),
 ): OpenStatus {
   const ranges = intervals(hours);
-  if (ranges.length === 0) return { open: false, label: "Closed" };
+  if (ranges.length === 0) return { kind: "never", open: false };
   if (ranges.length === 1 && ranges[0][1] - ranges[0][0] >= WEEK) {
-    return { open: true, label: "Open 24 hours" };
+    return { kind: "always", open: true };
   }
 
   const t = weekMinute(now, timeZone);
@@ -80,7 +92,7 @@ export function openStatus(
   for (const [start, end] of ranges) {
     for (const shift of [0, -WEEK]) {
       if (start + shift <= t && t < end + shift) {
-        return { open: true, label: `Open · Closes ${clock(end)}` };
+        return { kind: "open", open: true, closes: clock(end) };
       }
     }
   }
@@ -88,11 +100,11 @@ export function openStatus(
   const next = ranges.find(([start]) => start > t)?.[0] ?? ranges[0][0] + WEEK;
   const today = Math.floor(t / DAY);
   const nextDay = Math.floor(next / DAY);
-  const when =
+  const on =
     nextDay === today
-      ? ""
+      ? "today"
       : nextDay === today + 1
-        ? "tomorrow "
-        : `${SHORT_DAYS[nextDay % 7]} `;
-  return { open: false, label: `Closed · Opens ${when}${clock(next)}` };
+        ? "tomorrow"
+        : DAYS[nextDay % 7];
+  return { kind: "closed", open: false, opens: clock(next), on };
 }

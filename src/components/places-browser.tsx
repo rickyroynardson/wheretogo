@@ -24,6 +24,7 @@ import { PlacesMap } from "@/components/places-map";
 import { findArea } from "@/data/areas";
 import { CATEGORIES, type Category, isCategory } from "@/data/constants";
 import type { Place } from "@/data/places";
+import { useI18n } from "@/i18n/client";
 import { distanceKm, formatDistance } from "@/lib/distance";
 import { openStatus } from "@/lib/opening";
 
@@ -65,6 +66,8 @@ const field =
 // ?view=list&category=cafe,mall&q=kopi&status=open&within=3&sort=nearest
 export function PlacesBrowser({ places }: { places: Place[] }) {
   const params = useSearchParams();
+  const { t, intl, path } = useI18n();
+  const b = t.browser;
   // Anything invalid in the URL falls back to the default
   const view = params.get("view") === "list" ? "list" : "map";
   const query = params.get("q") ?? "";
@@ -111,7 +114,7 @@ export function PlacesBrowser({ places }: { places: Place[] }) {
     if (origin) return;
     if (!navigator.geolocation) {
       setParams(undo);
-      setLocateError("Location isn't available in this browser.");
+      setLocateError(t.common.noGeolocation);
       return;
     }
     setLocating(true);
@@ -123,7 +126,7 @@ export function PlacesBrowser({ places }: { places: Place[] }) {
       () => {
         setLocating(false);
         setParams(undo);
-        setLocateError("Couldn't get your location.");
+        setLocateError(b.locationFailed);
       },
       { timeout: 10_000, maximumAge: 5 * 60_000 },
     );
@@ -212,10 +215,10 @@ export function PlacesBrowser({ places }: { places: Place[] }) {
 
   // "Cafés & Malls" when categories are picked, else "All places"
   const title = categories.length
-    ? new Intl.ListFormat("en", { type: "conjunction" }).format(
-        categories.map((c) => CATEGORIES[c].plural),
+    ? new Intl.ListFormat(intl, { type: "conjunction" }).format(
+        categories.map((c) => t.categories[c].plural),
       )
-    : "All places";
+    : b.allPlaces;
 
   const anyClosed = Boolean(
     time &&
@@ -236,9 +239,9 @@ export function PlacesBrowser({ places }: { places: Place[] }) {
 
   // Short summary of active filters for the map pill
   const summary = [
-    ...categories.map((c) => CATEGORIES[c].label),
-    status === "open" ? "Open now" : status === "closed" ? "Closed now" : null,
-    within ? `Within ${within} km` : null,
+    ...categories.map((c) => t.categories[c].label),
+    status === "open" ? b.openNow : status === "closed" ? b.closedNow : null,
+    within ? b.within(within) : null,
     query.trim() ? `“${query.trim()}”` : null,
   ]
     .filter(Boolean)
@@ -251,45 +254,46 @@ export function PlacesBrowser({ places }: { places: Place[] }) {
 
       {(area || at) && (
         <p className="flex flex-wrap items-center gap-x-1.5 pb-3 text-sm text-muted-foreground">
-          {area && <span>From {area.name}</span>}
+          {area && <span>{b.from(area.name)}</span>}
           {area && at && <span aria-hidden>·</span>}
           {at && (
             <span>
-              Leaving{" "}
-              {at.toLocaleString("en-GB", {
-                weekday: "short",
-                day: "numeric",
-                month: "short",
-                hour: "numeric",
-                minute: "2-digit",
-                hourCycle: "h12",
-              })}
+              {b.leaving(
+                at.toLocaleString(intl, {
+                  weekday: "short",
+                  day: "numeric",
+                  month: "short",
+                  hour: "numeric",
+                  minute: "2-digit",
+                  hourCycle: "h12",
+                }),
+              )}
             </span>
           )}
           <Link
-            href="/"
+            href={path("/")}
             className="ml-1 font-medium text-foreground underline underline-offset-2"
           >
-            Change
+            {t.common.change}
           </Link>
         </p>
       )}
 
       <div
         role="tablist"
-        aria-label="View"
+        aria-label={b.view}
         className="mb-4 grid grid-cols-2 rounded-xl bg-muted p-1 text-sm font-medium"
       >
-        {(["map", "list"] as const).map((t) => (
+        {(["map", "list"] as const).map((tab) => (
           <button
-            key={t}
+            key={tab}
             type="button"
             role="tab"
-            aria-selected={view === t}
-            onClick={() => setParams({ view: t === "map" ? null : t })}
-            className="cursor-pointer rounded-lg py-1.5 capitalize text-muted-foreground aria-selected:bg-background aria-selected:text-foreground aria-selected:shadow-sm"
+            aria-selected={view === tab}
+            onClick={() => setParams({ view: tab === "map" ? null : tab })}
+            className="cursor-pointer rounded-lg py-1.5 text-muted-foreground aria-selected:bg-background aria-selected:text-foreground aria-selected:shadow-sm"
           >
-            {t}
+            {b[tab]}
           </button>
         ))}
       </div>
@@ -299,7 +303,7 @@ export function PlacesBrowser({ places }: { places: Place[] }) {
         <div className="flex flex-col gap-3 pb-4">
           <div className="flex gap-2">
             <label className="relative flex-1">
-              <span className="sr-only">Search places</span>
+              <span className="sr-only">{b.search}</span>
               <Search
                 className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
                 aria-hidden
@@ -308,7 +312,7 @@ export function PlacesBrowser({ places }: { places: Place[] }) {
                 type="search"
                 value={query}
                 onChange={(e) => setParams({ q: e.target.value })}
-                placeholder="Search places"
+                placeholder={b.search}
                 className="w-full rounded-xl bg-muted py-2.5 pr-3 pl-9 text-base outline-none placeholder:text-muted-foreground focus:ring-2 focus:ring-primary"
               />
             </label>
@@ -320,7 +324,7 @@ export function PlacesBrowser({ places }: { places: Place[] }) {
               className="flex cursor-pointer items-center gap-1.5 rounded-xl bg-muted px-3 text-sm font-medium aria-expanded:bg-primary aria-expanded:text-primary-foreground"
             >
               <SlidersHorizontal className="size-4" aria-hidden />
-              Filters
+              {b.filters}
               {activeFilters > 0 && (
                 <span className="grid size-5 place-items-center rounded-full bg-foreground text-xs text-background">
                   {activeFilters}
@@ -332,7 +336,9 @@ export function PlacesBrowser({ places }: { places: Place[] }) {
           {showFilters && (
             <div id="filters" className="grid grid-cols-3 gap-2">
               <div className="flex flex-col gap-1">
-                <span className="text-xs text-muted-foreground">Category</span>
+                <span className="text-xs text-muted-foreground">
+                  {b.category}
+                </span>
                 <CategorySelect
                   options={available}
                   selected={categories}
@@ -342,35 +348,39 @@ export function PlacesBrowser({ places }: { places: Place[] }) {
               </div>
 
               <div className="flex flex-col gap-1">
-                <span className="text-xs text-muted-foreground">Status</span>
+                <span className="text-xs text-muted-foreground">
+                  {b.status}
+                </span>
                 <OptionSelect
-                  label="Status"
+                  label={b.status}
                   value={status ?? "any"}
                   onChange={(v) =>
                     setParams({ status: v === "any" ? null : v })
                   }
                   disabled={!now}
                   options={[
-                    { value: "any", label: "Any" },
-                    { value: "open", label: "Open now" },
-                    { value: "closed", label: "Closed now" },
+                    { value: "any", label: t.common.any },
+                    { value: "open", label: b.openNow },
+                    { value: "closed", label: b.closedNow },
                   ]}
                 />
               </div>
 
               <div className="flex flex-col gap-1">
-                <span className="text-xs text-muted-foreground">Distance</span>
+                <span className="text-xs text-muted-foreground">
+                  {b.distance}
+                </span>
                 <OptionSelect
-                  label="Distance"
+                  label={b.distance}
                   value={within ? String(within) : "any"}
                   onChange={(v) => changeWithin(v === "any" ? "" : v)}
                   disabled={locating}
                   align="right"
                   options={[
-                    { value: "any", label: "Any" },
+                    { value: "any", label: t.common.any },
                     ...DISTANCES.map((km) => ({
                       value: String(km),
-                      label: `Within ${km} km`,
+                      label: b.within(km),
                     })),
                   ]}
                 />
@@ -380,7 +390,7 @@ export function PlacesBrowser({ places }: { places: Place[] }) {
 
           {(locating || locateError) && (
             <output className="text-xs">
-              {locating ? "Getting your location…" : locateError}
+              {locating ? t.common.locating : locateError}
             </output>
           )}
 
@@ -388,8 +398,8 @@ export function PlacesBrowser({ places }: { places: Place[] }) {
             <div className="flex items-center gap-3">
               <p aria-live="polite">
                 {filtered
-                  ? `${matches.length} of ${places.length} places`
-                  : `${places.length} ${places.length === 1 ? "place" : "places"}`}
+                  ? b.someOf(matches.length, places.length)
+                  : b.places(places.length)}
               </p>
               {filtered && (
                 <button
@@ -397,23 +407,23 @@ export function PlacesBrowser({ places }: { places: Place[] }) {
                   onClick={clearAll}
                   className="cursor-pointer underline underline-offset-2 hover:text-foreground"
                 >
-                  Clear all
+                  {b.clearAll}
                 </button>
               )}
             </div>
             <div className="flex items-center gap-1.5">
-              <span aria-hidden>Sort</span>
+              <span aria-hidden>{b.sort}</span>
               <OptionSelect
-                label="Sort"
+                label={b.sort}
                 value={sort}
                 onChange={(v) => changeSort(v as Sort)}
                 disabled={locating}
                 compact
                 align="right"
                 options={[
-                  { value: "default", label: "Default" },
-                  { value: "name", label: "Name (A–Z)" },
-                  { value: "nearest", label: "Nearest" },
+                  { value: "default", label: b.sortDefault },
+                  { value: "name", label: b.sortName },
+                  { value: "nearest", label: b.sortNearest },
                 ]}
               />
             </div>
@@ -440,15 +450,14 @@ export function PlacesBrowser({ places }: { places: Place[] }) {
                 setShowFilters(true);
               }}
               className="cursor-pointer truncate py-1.5 pl-3"
-              title="Edit filters"
+              title={b.editFilters}
             >
-              {summary} · {matches.length}{" "}
-              {matches.length === 1 ? "place" : "places"}
+              {summary} · {b.places(matches.length)}
             </button>
             <button
               type="button"
               onClick={clearAll}
-              aria-label="Clear filters"
+              aria-label={b.clearFilters}
               className="cursor-pointer p-1.5 pr-2"
             >
               <X className="size-3.5" aria-hidden />
@@ -459,11 +468,11 @@ export function PlacesBrowser({ places }: { places: Place[] }) {
         {(mapCategories.length > 0 || anyClosed || area || me) && (
           <ul className="flex flex-wrap gap-x-4 gap-y-2 pt-3 text-xs text-muted-foreground">
             {mapCategories.map((c) => {
-              const { icon: Icon, label } = CATEGORIES[c];
+              const { icon: Icon } = CATEGORIES[c];
               return (
                 <li key={c} className="flex items-center gap-1.5">
                   <Icon className="size-3.5" strokeWidth={2.25} aria-hidden />
-                  {label}
+                  {t.categories[c].label}
                 </li>
               );
             })}
@@ -473,7 +482,7 @@ export function PlacesBrowser({ places }: { places: Place[] }) {
                   className="size-3 rounded-full bg-neutral-300 ring-2 ring-white"
                   aria-hidden
                 />
-                Closed
+                {b.legendClosed}
               </li>
             )}
             {(area || me) && (
@@ -484,7 +493,7 @@ export function PlacesBrowser({ places }: { places: Place[] }) {
                   aria-hidden
                 />
                 {/* The starting point: a chosen area, else the user */}
-                {area ? area.name : "You"}
+                {area ? area.name : b.you}
               </li>
             )}
           </ul>
@@ -499,13 +508,13 @@ export function PlacesBrowser({ places }: { places: Place[] }) {
                 key={place.id}
                 place={place}
                 at={at}
-                distance={km === null ? undefined : formatDistance(km)}
+                distance={km === null ? undefined : formatDistance(km, intl)}
               />
             ))}
           </ul>
         ) : (
           <p className="py-4 text-sm text-muted-foreground">
-            {filtered ? "No places match." : "Nothing here yet."}
+            {filtered ? b.noMatches : b.empty}
           </p>
         )}
       </div>
@@ -644,15 +653,16 @@ function CategorySelect({
   onToggle: (c: Category) => void;
   onClear: () => void;
 }) {
+  const { t } = useI18n();
   const summary =
     selected.length === 0
-      ? "All"
+      ? t.browser.allCategories
       : selected.length === 1
-        ? CATEGORIES[selected[0]].label
-        : `${selected.length} selected`;
+        ? t.categories[selected[0]].label
+        : t.browser.selected(selected.length);
 
   return (
-    <Dropdown label="Categories" summary={summary}>
+    <Dropdown label={t.browser.categories} summary={summary}>
       {() => (
         <>
           {options.map((c) => (
@@ -663,7 +673,7 @@ function CategorySelect({
                 onChange={() => onToggle(c)}
                 className="size-4 accent-primary"
               />
-              {CATEGORIES[c].label}
+              {t.categories[c].label}
             </label>
           ))}
           {selected.length > 0 && (
@@ -672,7 +682,7 @@ function CategorySelect({
               onClick={onClear}
               className="mt-1 cursor-pointer rounded-lg px-2 py-1.5 text-left text-xs text-muted-foreground hover:bg-muted"
             >
-              Clear
+              {t.common.clear}
             </button>
           )}
         </>
@@ -692,13 +702,14 @@ function PlaceItem({
   at: Date | null;
 }) {
   const tripQuery = useTripQuery();
+  const { t, path } = useI18n();
   const { icon: Icon } = CATEGORIES[place.categories[0]];
-  const label = place.categories.map((c) => CATEGORIES[c].label).join(" · ");
+  const label = place.categories.map((c) => t.categories[c].label).join(" · ");
 
   return (
     <li className="border-b border-border last:border-b-0">
       <Link
-        href={`/places/${place.id}${tripQuery}`}
+        href={path(`/places/${place.id}${tripQuery}`)}
         className="group flex items-center gap-3 py-4"
       >
         {place.image ? (
@@ -724,7 +735,7 @@ function PlaceItem({
             </h2>
             <p className="flex flex-wrap gap-x-2 text-sm text-muted-foreground">
               {label}
-              {distance && <span>{distance} away</span>}
+              {distance && <span>{t.common.away(distance)}</span>}
               {place.hours && place.timezone && (
                 <OpenStatus
                   hours={place.hours}

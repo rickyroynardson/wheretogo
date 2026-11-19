@@ -10,41 +10,30 @@ import {
   Wine,
 } from "lucide-react";
 
-// Order here is the order of the buttons on the home page
+// Order here is the order of the buttons on the home page.
+// Names live in the i18n dictionaries (categories.*).
 export const CATEGORIES = {
   restaurant: {
-    label: "Restaurant",
-    plural: "Restaurants",
     icon: UtensilsCrossed,
   },
   // Coffee, tea, brunch; "Café" rather than "Coffee Shop" so cake places fit
   cafe: {
-    label: "Café",
-    plural: "Cafés",
     icon: Coffee,
   },
   // Patisseries, bakeries, ice cream, dessert bars
   dessert: {
-    label: "Dessert",
-    plural: "Desserts",
     icon: CakeSlice,
   },
   mall: {
-    label: "Mall",
-    plural: "Malls",
     icon: ShoppingBag,
   },
   park: {
-    label: "Park",
-    plural: "Parks",
     icon: Trees,
   },
   bar: {
-    label: "Bar",
-    plural: "Bars",
     icon: Wine,
   },
-} satisfies Record<string, { label: string; plural: string; icon: LucideIcon }>;
+} satisfies Record<string, { icon: LucideIcon }>;
 
 export type Category = keyof typeof CATEGORIES;
 

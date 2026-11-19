@@ -5,11 +5,18 @@ import { headers } from "next/headers";
 import { isRateLimited } from "@/lib/rate-limit";
 import { sendTelegramMessage } from "@/lib/telegram";
 
-export type FeedbackResult = { ok: boolean; message: string };
+// Codes, not text: the form words them in the visitor's language
+export type FeedbackError =
+  | "invalid"
+  | "empty"
+  | "tooLong"
+  | "rateLimited"
+  | "failed";
+export type FeedbackResult = { ok: true } | { ok: false; error: FeedbackError };
 
-const MAX_MESSAGE = 2000;
+// Form allows 2000; the rest is room for the "[topic] [lang]" tags it adds
+const MAX_MESSAGE = 2100;
 const MAX_CONTACT = 200;
-const THANKS = "Thanks! Feedback sent.";
 
 // FormData values can be File objects; only accept strings
 function text(formData: FormData, name: string) {
@@ -22,20 +29,20 @@ export async function sendFeedback(
 ): Promise<FeedbackResult> {
   // Actions are public POST endpoints; the argument can be anything
   if (!(formData instanceof FormData)) {
-    return { ok: false, message: "Invalid request." };
+    return { ok: false, error: "invalid" };
   }
 
   // Honeypot: hidden from people, bots fill it. Pretend success.
-  if (text(formData, "company")) return { ok: true, message: THANKS };
+  if (text(formData, "company")) return { ok: true };
 
   const message = text(formData, "message");
   const contact = text(formData, "contact");
 
   if (!message) {
-    return { ok: false, message: "Please write something first." };
+    return { ok: false, error: "empty" };
   }
   if (message.length > MAX_MESSAGE || contact.length > MAX_CONTACT) {
-    return { ok: false, message: "That's a bit too long." };
+    return { ok: false, error: "tooLong" };
   }
 
   // Vercel sets x-forwarded-for itself, so clients can't spoof it there
@@ -43,10 +50,7 @@ export async function sendFeedback(
     (await headers()).get("x-forwarded-for")?.split(",")[0]?.trim() ||
     "unknown";
   if (isRateLimited(ip)) {
-    return {
-      ok: false,
-      message: "Too many messages. Try again later.",
-    };
+    return { ok: false, error: "rateLimited" };
   }
 
   try {
@@ -58,11 +62,8 @@ export async function sendFeedback(
       "[feedback] delivery failed:",
       error instanceof Error ? error.message : "unknown error",
     );
-    return {
-      ok: false,
-      message: "Couldn't send right now. Please try again later.",
-    };
+    return { ok: false, error: "failed" };
   }
 
-  return { ok: true, message: THANKS };
+  return { ok: true };
 }

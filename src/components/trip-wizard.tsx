@@ -18,6 +18,7 @@ import { Drawer } from "@/components/drawer";
 import { TimePicker } from "@/components/time-picker";
 import { type Area, findArea, searchAreas } from "@/data/areas";
 import { INTENTS, type Intent } from "@/data/intents";
+import { useI18n } from "@/i18n/client";
 
 type Step = "what" | "from" | "when";
 // null = "Anything"
@@ -66,6 +67,8 @@ function writeRecent(areas: Area[]) {
 // only the final answers go into the results URL.
 export function TripWizard() {
   const router = useRouter();
+  const { t, path } = useI18n();
+  const w = t.wizard;
   const [step, setStep] = useState<Step>("what");
   // undefined until answered, so nothing shows as selected on first visit
   const [what, setWhat] = useState<What | undefined>(undefined);
@@ -104,14 +107,16 @@ export function TripWizard() {
     if (options.at) params.set("at", options.at);
     // ":" and "," are safe in a query string; keep the URL readable
     router.push(
-      `/places?${params.toString().replaceAll("%3A", ":").replaceAll("%2C", ",")}`,
+      path(
+        `/places?${params.toString().replaceAll("%3A", ":").replaceAll("%2C", ",")}`,
+      ),
     );
   }
 
   function useMyLocation() {
     setError(null);
     if (!navigator.geolocation) {
-      setError("Location isn't available in this browser.");
+      setError(t.common.noGeolocation);
       return;
     }
     setLocating(true);
@@ -123,7 +128,7 @@ export function TripWizard() {
       },
       () => {
         setLocating(false);
-        setError("Couldn't get your location. Pick an area instead?");
+        setError(w.locationFailed);
       },
       { timeout: 10_000, maximumAge: 5 * 60_000 },
     );
@@ -147,14 +152,14 @@ export function TripWizard() {
         {step !== "what" && (
           <div className="flex flex-wrap gap-2 pb-4">
             <AnswerChip
-              label={what ? what.label : "Anything"}
-              hint="Change what you're looking for"
+              label={what ? t.intents[what.id] : w.anything}
+              hint={w.changeWhat}
               onClick={() => goTo("what")}
             />
             {step === "when" && (
               <AnswerChip
-                label={area ? area.name : "My location"}
-                hint="Change where you're leaving from"
+                label={area ? area.name : w.myLocation}
+                hint={w.changeFrom}
                 onClick={() => goTo("from")}
               />
             )}
@@ -169,14 +174,14 @@ export function TripWizard() {
                 variants={item}
                 className="pb-3 text-2xl font-semibold text-muted-foreground"
               >
-                What are you looking for?
+                {w.whatTitle}
               </motion.h2>
               <motion.ul variants={list} className="flex flex-col gap-2">
                 {INTENTS.map((intent) => (
                   <Option
                     key={intent.id}
                     icon={intent.icon}
-                    label={intent.label}
+                    label={t.intents[intent.id]}
                     selected={what?.id === intent.id}
                     onClick={() => {
                       setWhat(intent);
@@ -186,7 +191,7 @@ export function TripWizard() {
                 ))}
                 <Option
                   icon={Sparkles}
-                  label="Anything"
+                  label={w.anything}
                   selected={what === null}
                   onClick={() => {
                     setWhat(null);
@@ -203,29 +208,29 @@ export function TripWizard() {
                 variants={item}
                 className="pb-3 text-2xl font-semibold text-muted-foreground"
               >
-                Where are you leaving from?
+                {w.fromTitle}
               </motion.h2>
               <motion.ul variants={list} className="flex flex-col gap-2">
                 <Option
                   icon={LocateFixed}
                   // Default answer: active until another place is picked
                   selected={from === null || from === "me"}
-                  label={locating ? "Getting your location…" : "My location"}
+                  label={locating ? t.common.locating : w.myLocation}
                   disabled={locating}
                   onClick={useMyLocation}
                 />
                 <Option
                   icon={MapPin}
                   // Once picked, the card shows the area itself
-                  label={area ? area.name : "Somewhere else"}
-                  hint={area ? "Tap to change" : undefined}
+                  label={area ? area.name : w.somewhereElse}
+                  hint={area ? w.tapToChange : undefined}
                   selected={area !== null}
                   onClick={() => setDrawer("area")}
                 />
                 <Option
                   icon={LocateFixed}
-                  label="Skip to results"
-                  hint="Near me, leaving now"
+                  label={w.skip}
+                  hint={w.skipHint}
                   onClick={() => showResults()}
                 />
               </motion.ul>
@@ -238,20 +243,20 @@ export function TripWizard() {
                 variants={item}
                 className="pb-3 text-2xl font-semibold text-muted-foreground"
               >
-                When are you leaving?
+                {w.whenTitle}
               </motion.h2>
               <motion.ul variants={list} className="flex flex-col gap-2">
                 <Option
                   icon={Clock}
-                  label="Now"
+                  label={w.now}
                   // Default answer; the time isn't kept since picking one leaves
                   selected
                   onClick={() => showResults({ area })}
                 />
                 <Option
                   icon={RotateCwFadingClock}
-                  label="Pick a time"
-                  hint="Tonight, tomorrow, this weekend..."
+                  label={w.pickTime}
+                  hint={w.pickTimeHint}
                   onClick={() => setDrawer("time")}
                 />
               </motion.ul>
@@ -268,10 +273,10 @@ export function TripWizard() {
         <Drawer
           open={drawer === "area"}
           onClose={() => setDrawer(null)}
-          title="Leaving from"
+          title={w.leavingFrom}
         >
           <label className="relative block pb-3">
-            <span className="sr-only">Search areas</span>
+            <span className="sr-only">{w.searchAreas}</span>
             <Search
               className="pointer-events-none absolute top-3 left-3 size-4 text-muted-foreground"
               aria-hidden
@@ -305,7 +310,7 @@ export function TripWizard() {
                   pickArea(matches[active]);
                 }
               }}
-              placeholder="Search an area"
+              placeholder={w.searchPlaceholder}
               className="w-full rounded-xl bg-muted py-2 pr-3 pl-9 text-base outline-none placeholder:text-muted-foreground focus:ring-2 focus:ring-primary"
             />
           </label>
@@ -314,7 +319,7 @@ export function TripWizard() {
             (recent.length > 0 ? (
               <>
                 <div className="flex items-center justify-between pb-1 text-xs text-muted-foreground">
-                  <span>Recent</span>
+                  <span>{w.recent}</span>
                   <button
                     type="button"
                     onClick={() => {
@@ -323,15 +328,13 @@ export function TripWizard() {
                     }}
                     className="cursor-pointer underline underline-offset-2 hover:text-foreground"
                   >
-                    Clear
+                    {t.common.clear}
                   </button>
                 </div>
                 <AreaList areas={recent} icon={History} onPick={pickArea} />
               </>
             ) : (
-              <p className="py-3 text-sm text-muted-foreground">
-                Type an area, like Nagoya or Batam Centre.
-              </p>
+              <p className="py-3 text-sm text-muted-foreground">{w.typeHint}</p>
             ))}
 
           {query &&
@@ -345,7 +348,7 @@ export function TripWizard() {
               />
             ) : (
               <p className="py-3 text-sm text-muted-foreground">
-                No areas match “{query}”. Try a nearby neighbourhood.
+                {w.noAreas(query)}
               </p>
             ))}
         </Drawer>
@@ -353,7 +356,7 @@ export function TripWizard() {
         <Drawer
           open={drawer === "time"}
           onClose={() => setDrawer(null)}
-          title="Leaving at"
+          title={w.leavingAt}
         >
           {/* Mounted only while open, so it reads the clock at that moment */}
           {drawer === "time" && (
@@ -384,8 +387,14 @@ function AreaList({
   id?: string;
   active?: number;
 }) {
+  const { t } = useI18n();
   return (
-    <div id={id} role="listbox" aria-label="Areas" className="flex flex-col">
+    <div
+      id={id}
+      role="listbox"
+      aria-label={t.wizard.areas}
+      className="flex flex-col"
+    >
       {areas.map((a, i) => (
         <div
           key={a.id}

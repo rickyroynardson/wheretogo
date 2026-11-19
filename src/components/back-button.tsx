@@ -4,6 +4,7 @@ import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef } from "react";
+import { useI18n } from "@/i18n/client";
 
 // Becomes true once the user has moved between pages inside the site, so
 // browser Back stays in the app. Module state survives client navigations.
@@ -24,12 +25,14 @@ export function NavigationTracker() {
 // previous page); falls back to a link when the page was opened directly.
 export function BackButton({
   fallback,
-  label = "Back",
+  label,
 }: {
+  // Already localized, e.g. path("/places")
   fallback: string;
   label?: string;
 }) {
   const router = useRouter();
+  const { t } = useI18n();
   return (
     <Link
       href={fallback}
@@ -41,7 +44,7 @@ export function BackButton({
       className="-ml-1.5 flex items-center self-start text-sm font-medium text-muted-foreground"
     >
       <ChevronLeft className="size-6" aria-hidden />
-      {label}
+      {label ?? t.common.back}
     </Link>
   );
 }

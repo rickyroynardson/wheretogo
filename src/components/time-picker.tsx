@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useId, useMemo, useRef, useState } from "react";
+import type { Dictionary } from "@/i18n";
+import { useI18n } from "@/i18n/client";
 
 const ROW = 40; // px, height of one wheel row
 const DAYS_AHEAD = 14;
@@ -42,16 +44,18 @@ function nextQuarter(now: Date) {
   return d;
 }
 
-function dayLabel(offset: number, today: Date) {
-  if (offset === 0) return "Today";
-  if (offset === 1) return "Tomorrow";
+type Labels = Dictionary["timePicker"];
+
+function dayLabel(offset: number, today: Date, t: Labels, intl: string) {
+  if (offset === 0) return t.today;
+  if (offset === 1) return t.tomorrow;
   const d = new Date(today);
   d.setDate(d.getDate() + offset);
-  return d.toLocaleDateString("en-GB", { weekday: "short", day: "numeric" });
+  return d.toLocaleDateString(intl, { weekday: "short", day: "numeric" });
 }
 
 // Quick picks for going out, not commuting
-function presets(now: Date, today: Date) {
+function presets(now: Date, today: Date, t: Labels) {
   const at = (day: number, hour: number) =>
     toDate({ day, hour, minute: 0 }, today);
   const inAnHour = nextQuarter(new Date(now.getTime() + 45 * 60_000));
@@ -59,15 +63,17 @@ function presets(now: Date, today: Date) {
   // Saturday 10:00, or next week's if today is already the weekend
   const toSaturday = (6 - today.getDay() + 7) % 7 || 7;
   const list = [
-    { label: "In 1 hour", date: inAnHour },
-    { label: "Tonight 7 pm", date: tonight },
-    { label: "Tomorrow lunch", date: at(1, 12) },
-    { label: "This weekend", date: at(toSaturday, 10) },
+    { label: t.inAnHour, date: inAnHour },
+    { label: t.tonight, date: tonight },
+    { label: t.tomorrowLunch, date: at(1, 12) },
+    { label: t.weekend, date: at(toSaturday, 10) },
   ];
   return list.filter((p) => p.date > now);
 }
 
 export function TimePicker({ onPick }: { onPick: (date: Date) => void }) {
+  const i18n = useI18n();
+  const t = i18n.t.timePicker;
   // Clock is read once when the picker opens (it only mounts in the drawer)
   const [now] = useState(() => new Date());
   const today = useMemo(() => startOfDay(now), [now]);
@@ -78,7 +84,7 @@ export function TimePicker({ onPick }: { onPick: (date: Date) => void }) {
 
   const days = Array.from({ length: DAYS_AHEAD }, (_, i) => ({
     value: i,
-    label: dayLabel(i, today),
+    label: dayLabel(i, today, t, i18n.intl),
   }));
   // Wheels show a 12-hour clock; the choice itself stays 0-23
   const hours = Array.from({ length: 12 }, (_, i) => ({
@@ -95,7 +101,7 @@ export function TimePicker({ onPick }: { onPick: (date: Date) => void }) {
   return (
     <div className="flex flex-col gap-4">
       <div className="-mx-5 flex gap-2 overflow-x-auto px-5 [scrollbar-width:none]">
-        {presets(now, today).map((p) => (
+        {presets(now, today, t).map((p) => (
           <button
             key={p.label}
             type="button"
@@ -114,14 +120,14 @@ export function TimePicker({ onPick }: { onPick: (date: Date) => void }) {
           aria-hidden
         />
         <Wheel
-          label="Day"
+          label={t.day}
           options={days}
           value={choice.day}
           // Functional update: wheels commit on a delay, so never use a stale `choice`
           onChange={(day) => setChoice((c) => ({ ...c, day }))}
         />
         <Wheel
-          label="Hour"
+          label={t.hour}
           options={hours}
           value={choice.hour % 12 || 12}
           onChange={(h12) =>
@@ -132,13 +138,13 @@ export function TimePicker({ onPick }: { onPick: (date: Date) => void }) {
           }
         />
         <Wheel
-          label="Minute"
+          label={t.minute}
           options={minutes}
           value={choice.minute}
           onChange={(minute) => setChoice((c) => ({ ...c, minute }))}
         />
         <Wheel
-          label="AM or PM"
+          label={t.period}
           options={periods}
           value={pm}
           onChange={(period) =>
@@ -154,8 +160,10 @@ export function TimePicker({ onPick }: { onPick: (date: Date) => void }) {
         className="cursor-pointer rounded-xl bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground disabled:cursor-not-allowed disabled:opacity-50"
       >
         {inPast
-          ? "Pick a later time"
-          : `Show places · ${dayLabel(choice.day, today)} ${clock12(choice.hour, choice.minute)}`}
+          ? t.tooEarly
+          : t.show(
+              `${dayLabel(choice.day, today, t, i18n.intl)} ${clock12(choice.hour, choice.minute)}`,
+            )}
       </button>
     </div>
   );

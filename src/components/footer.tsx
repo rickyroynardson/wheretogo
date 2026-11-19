@@ -1,11 +1,13 @@
 import { FeedbackForm } from "@/components/feedback-form";
+import { getI18n } from "@/i18n/server";
 
-export function Footer() {
+export async function Footer() {
+  const { t } = await getI18n();
   return (
     <footer className="mt-10 flex flex-col gap-3 border-t border-border pt-3 pb-8 has-[details:not([open])]:pb-10">
       <FeedbackForm />
       <p className="text-sm text-muted-foreground">
-        Built by{" "}
+        {t.footer.builtBy}{" "}
         <a
           href="https://rrn.vercel.app"
           target="_blank"
@@ -14,7 +16,7 @@ export function Footer() {
         >
           Ricky
         </a>
-        , for when you can't decide where to go.
+        {t.footer.tagline}
       </p>
     </footer>
   );

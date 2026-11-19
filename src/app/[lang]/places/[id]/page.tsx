@@ -8,8 +8,10 @@ import { LocalTimeNote, TripOpenStatus } from "@/components/open-status";
 import { OpeningHours } from "@/components/opening-hours";
 import { CATEGORIES } from "@/data/constants";
 import { PLACES, type Place } from "@/data/places";
+import type { I18n } from "@/i18n";
+import { getI18n } from "@/i18n/server";
 
-type Params = PageProps<"/places/[id]">["params"];
+type Params = PageProps<"/[lang]/places/[id]">["params"];
 
 // Exact string match, so "/places/01" doesn't alias "/places/1"
 const findPlace = (id: string) =>
@@ -25,14 +27,16 @@ export function generateStaticParams() {
 
 export async function generateMetadata({
   params,
-}: PageProps<"/places/[id]">): Promise<Metadata> {
+}: PageProps<"/[lang]/places/[id]">): Promise<Metadata> {
   const place = findPlace((await params).id);
   if (!place) return {};
   return { title: place.name, description: place.description };
 }
 
 // Reading params suspends, so it sits inside Suspense to keep navigation instant
-export default function PlacePage({ params }: PageProps<"/places/[id]">) {
+export default function PlacePage({
+  params,
+}: PageProps<"/[lang]/places/[id]">) {
   return (
     <Suspense
       fallback={
@@ -47,16 +51,18 @@ export default function PlacePage({ params }: PageProps<"/places/[id]">) {
 async function PlaceDetails({ params }: { params: Params }) {
   const place = findPlace((await params).id);
   if (!place) notFound();
+  const i18n = await getI18n();
+  const { t, path } = i18n;
 
   const main = place.categories[0];
-  const { plural } = CATEGORIES[main];
+  const { plural } = t.categories[main];
   const directions = directionsUrl(place);
 
   return (
     <article className="flex flex-col gap-6 pt-2 pb-4">
       <BackButton
-        fallback={`/places?view=list&category=${main}`}
-        label={`Back to ${plural}`}
+        fallback={path(`/places?view=list&category=${main}`)}
+        label={t.place.backTo(plural)}
       />
 
       {place.image && (
@@ -73,7 +79,7 @@ async function PlaceDetails({ params }: { params: Params }) {
           />
           {place.imageCredit && (
             <figcaption className="text-xs text-muted-foreground">
-              Photo by:{" "}
+              {t.place.photoBy}{" "}
               {place.imageCredit.url ? (
                 <a
                   href={place.imageCredit.url}
@@ -105,7 +111,8 @@ async function PlaceDetails({ params }: { params: Params }) {
             />
           )}
           {place.categories.map((category) => {
-            const { icon: Icon, label } = CATEGORIES[category];
+            const { icon: Icon } = CATEGORIES[category];
+            const { label } = t.categories[category];
             return (
               <span
                 key={category}
@@ -129,22 +136,24 @@ async function PlaceDetails({ params }: { params: Params }) {
             className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-lg font-medium text-primary-foreground"
           >
             <Navigation className="size-5" aria-hidden />
-            Navigate
+            {t.place.navigate}
           </a>
-          {place.link && <PlaceLink url={place.link} name={place.name} />}
+          {place.link && (
+            <PlaceLink url={place.link} name={place.name} i18n={i18n} />
+          )}
         </div>
       </section>
 
       {place.description && (
         <section className="flex flex-col gap-2">
-          <h2 className="font-semibold">About</h2>
+          <h2 className="font-semibold">{t.place.about}</h2>
           <p className="text-sm">{place.description}</p>
         </section>
       )}
 
       {place.hours && (
         <section className="flex flex-col gap-2">
-          <h2 className="font-semibold">Opening hours</h2>
+          <h2 className="font-semibold">{t.place.openingHours}</h2>
           <OpeningHours hours={place.hours} />
           {place.timezone && <LocalTimeNote timezone={place.timezone} />}
         </section>
@@ -154,7 +163,15 @@ async function PlaceDetails({ params }: { params: Params }) {
 }
 
 // Icon-only button to the place's website or social profile
-function PlaceLink({ url, name }: { url: string; name: string }) {
+function PlaceLink({
+  url,
+  name,
+  i18n: { t },
+}: {
+  url: string;
+  name: string;
+  i18n: I18n;
+}) {
   const host = new URL(url).hostname.replace(/^www\./, "");
   const social = SOCIAL[host];
   const LinkIcon = social ? AtSign : Globe;
@@ -163,12 +180,12 @@ function PlaceLink({ url, name }: { url: string; name: string }) {
       href={url}
       target="_blank"
       rel="noopener noreferrer"
-      aria-label={`${name} on ${social ?? "its website"}`}
+      aria-label={t.place.on(name, social ?? t.place.itsWebsite)}
       title={host}
       className="flex shrink-0 items-center justify-center gap-2 rounded-xl bg-muted px-4 py-3 text-lg font-medium text-foreground"
     >
       <LinkIcon className="size-5" aria-hidden />
-      {social ?? "Website"}
+      {social ?? t.place.website}
     </a>
   );
 }

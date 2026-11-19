@@ -11,18 +11,15 @@ import { MotionConfig, motion } from "motion/react";
 import { useId, useState } from "react";
 import { useForm } from "react-hook-form";
 import { sendFeedback } from "@/app/actions/feedback";
+import { useI18n } from "@/i18n/client";
+import { en } from "@/i18n/dictionaries/en";
 
 const MAX_MESSAGE = 2000;
 const MAX_CONTACT = 150;
 // Show the counter only when it starts to matter
 const COUNTER_FROM = MAX_MESSAGE - 300;
 
-const TOPICS = [
-  "Suggest a place",
-  "Something's wrong",
-  "Idea",
-  "Other",
-] as const;
+const TOPICS = ["place", "wrong", "idea", "other"] as const;
 
 // 16px text: iOS Safari zooms the page into any focused field smaller than that
 const field =
@@ -37,6 +34,7 @@ const rise = {
 type Values = { message: string; contact: string; company: string };
 
 export function FeedbackForm() {
+  const { t } = useI18n();
   const [open, setOpen] = useState(false);
 
   return (
@@ -51,7 +49,7 @@ export function FeedbackForm() {
             className="size-5 text-primary transition-transform group-open:rotate-90"
             aria-hidden
           />
-          Send feedback
+          {t.feedback.toggle}
         </summary>
         {/* Mounted only while open, so it rises in each time */}
         {open && <FeedbackBody />}
@@ -61,6 +59,8 @@ export function FeedbackForm() {
 }
 
 function FeedbackBody() {
+  const { t: dict, locale } = useI18n();
+  const t = dict.feedback;
   // Generated ids, only to link hints/errors to inputs for screen readers
   const messageHint = useId();
   const contactHint = useId();
@@ -83,15 +83,17 @@ function FeedbackBody() {
   // Client checks are for UX only; the server action re-validates everything
   async function onSubmit(values: Values) {
     const formData = new FormData();
-    formData.set(
-      "message",
-      topic ? `[${topic}] ${values.message.trim()}` : values.message,
-    );
+    // Topic tag stays English for the inbox; the language tells who wrote it
+    const tags = [topic && en.feedback.topics[topic], locale]
+      .filter(Boolean)
+      .map((tag) => `[${tag}]`)
+      .join(" ");
+    formData.set("message", `${tags} ${values.message.trim()}`);
     formData.set("contact", values.contact);
     formData.set("company", values.company);
     const result = await sendFeedback(formData);
     if (result.ok) setSent(true);
-    else setError("root.server", { message: result.message });
+    else setError("root.server", { message: t.errors[result.error] });
   }
 
   if (sent) {
@@ -101,10 +103,8 @@ function FeedbackBody() {
           <Check className="size-4" strokeWidth={3} aria-hidden />
         </span>
         <span className="flex flex-col gap-0.5">
-          <span className="font-semibold">Thanks for the feedback</span>
-          <span className="text-sm text-muted-foreground">
-            It goes straight to Ricky, and every message gets read.
-          </span>
+          <span className="font-semibold">{t.thanksTitle}</span>
+          <span className="text-sm text-muted-foreground">{t.thanksBody}</span>
           <button
             type="button"
             onClick={() => {
@@ -114,7 +114,7 @@ function FeedbackBody() {
             }}
             className="mt-1 cursor-pointer self-start text-sm font-medium text-primary underline-offset-4 hover:underline"
           >
-            Send another
+            {t.sendAnother}
           </button>
         </span>
       </motion.output>
@@ -130,38 +130,37 @@ function FeedbackBody() {
     >
       <fieldset className="flex flex-col gap-2">
         <legend className="pb-2 text-sm text-muted-foreground">
-          What's it about?
+          {t.topicsLegend}
         </legend>
         <div className="flex flex-wrap gap-2">
-          {TOPICS.map((t) => (
+          {TOPICS.map((key) => (
             <button
-              key={t}
+              key={key}
               type="button"
-              aria-pressed={topic === t}
-              onClick={() => setTopic(topic === t ? null : t)}
+              aria-pressed={topic === key}
+              onClick={() => setTopic(topic === key ? null : key)}
               className="cursor-pointer rounded-full border border-border px-3 py-1.5 text-sm transition-colors aria-pressed:border-primary aria-pressed:bg-primary aria-pressed:text-primary-foreground"
             >
-              {t}
+              {t.topics[key]}
             </button>
           ))}
         </div>
       </fieldset>
 
       <label className="flex flex-col gap-1.5">
-        <span className="text-sm font-medium">Your message</span>
+        <span className="text-sm font-medium">{t.message}</span>
         <span className="relative">
           <textarea
             rows={3}
-            placeholder="What's working, what isn't, or a place we should add"
+            placeholder={t.messagePlaceholder}
             aria-invalid={errors.message ? true : undefined}
             aria-describedby={messageHint}
             className={`${field} resize-none px-3 py-2 ${length >= COUNTER_FROM ? "pb-6" : ""}`}
             {...register("message", {
-              validate: (v) =>
-                v.trim().length > 0 || "Write a few words first.",
+              validate: (v) => v.trim().length > 0 || t.messageRequired,
               maxLength: {
                 value: MAX_MESSAGE,
-                message: `Keep it under ${MAX_MESSAGE} characters.`,
+                message: t.tooLong(MAX_MESSAGE),
               },
             })}
           />
@@ -178,20 +177,20 @@ function FeedbackBody() {
 
       <label className="flex flex-col gap-1.5">
         <span className="flex items-baseline justify-between gap-2 text-sm">
-          <span className="font-medium">Where can we reply?</span>
-          <span className="text-xs text-muted-foreground">Optional</span>
+          <span className="font-medium">{t.contact}</span>
+          <span className="text-xs text-muted-foreground">{t.optional}</span>
         </span>
         <input
           type="text"
           autoComplete="email"
-          placeholder="Email or Telegram username"
+          placeholder={t.contactPlaceholder}
           aria-invalid={errors.contact ? true : undefined}
           aria-describedby={contactHint}
           className={`${field} px-3 py-2`}
           {...register("contact", {
             maxLength: {
               value: MAX_CONTACT,
-              message: `Keep it under ${MAX_CONTACT} characters.`,
+              message: t.tooLong(MAX_CONTACT),
             },
           })}
         />
@@ -217,12 +216,12 @@ function FeedbackBody() {
           {isSubmitting ? (
             <>
               <LoaderCircle className="size-4 animate-spin" aria-hidden />
-              Sending…
+              {t.sending}
             </>
           ) : (
             <>
               <Send className="size-4" aria-hidden />
-              Send feedback
+              {t.send}
             </>
           )}
         </button>

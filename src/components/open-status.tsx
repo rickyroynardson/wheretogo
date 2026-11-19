@@ -3,6 +3,7 @@
 import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import type { Hours } from "@/data/places";
+import { useI18n } from "@/i18n/client";
 import { openStatus, type OpenStatus as Status } from "@/lib/opening";
 
 // Pages are prebuilt, so "now" is only known in the browser. Renders nothing
@@ -20,6 +21,7 @@ export function OpenStatus({
   // A chosen leaving time; without it, status follows the live clock
   at?: Date;
 }) {
+  const { t } = useI18n();
   const [status, setStatus] = useState<Status | null>(null);
 
   useEffect(() => {
@@ -37,7 +39,7 @@ export function OpenStatus({
       <span
         className={`rounded-full px-2.5 py-1 text-xs font-medium ${status.open ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}
       >
-        {status.label}
+        {t.status(status)}
       </span>
     );
   }
@@ -51,13 +53,14 @@ export function OpenStatus({
         className={`size-1.5 rounded-full ${status.open ? "bg-primary" : "bg-muted-foreground/50"}`}
         aria-hidden
       />
-      {status.label}
+      {t.status(status)}
     </span>
   );
 }
 
 // Shown only when the visitor's timezone differs from the place's
 export function LocalTimeNote({ timezone }: { timezone: string }) {
+  const { t } = useI18n();
   const [differs, setDiffers] = useState(false);
 
   useEffect(() => {
@@ -68,7 +71,7 @@ export function LocalTimeNote({ timezone }: { timezone: string }) {
 
   return (
     <p className="text-xs text-muted-foreground">
-      Times are local to the place ({timezone.replace("_", " ")})
+      {t.place.localTime(timezone.replace("_", " "))}
     </p>
   );
 }

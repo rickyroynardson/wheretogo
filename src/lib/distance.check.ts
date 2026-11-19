@@ -14,4 +14,5 @@ assert.equal(formatDistance(0.234), "230 m");
 assert.equal(formatDistance(0.996), "1.0 km");
 assert.equal(formatDistance(1.234), "1.2 km");
 assert.equal(formatDistance(12.6), "13 km");
+assert.equal(formatDistance(1.234, "id-ID"), "1,2 km");
 console.log("distance ok");

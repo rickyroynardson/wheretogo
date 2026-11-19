@@ -14,6 +14,7 @@ import { createPortal } from "react-dom";
 import { useTripQuery } from "@/components/back-button";
 import { CATEGORIES } from "@/data/constants";
 import type { Place } from "@/data/places";
+import { useI18n } from "@/i18n/client";
 import { distanceKm, formatDistance } from "@/lib/distance";
 import { openStatus } from "@/lib/opening";
 
@@ -70,6 +71,7 @@ export function PlacesMap({
   }, [origin]);
   const [slots, setSlots] = useState<Slot[]>([]);
   const tripQuery = useTripQuery();
+  const { t, intl, path } = useI18n();
   const [me, setMe] = useState<Point | null>(null);
   // Set once the map exists; markers sync against it without rebuilding it
   const [ready, setReady] = useState<{
@@ -150,7 +152,7 @@ export function PlacesMap({
     dot.className =
       "size-4 rounded-full border-[3px] border-white bg-[#1da1f2] shadow-md";
     dot.setAttribute("role", "img");
-    dot.setAttribute("aria-label", `Starting point: ${origin.name}`);
+    dot.setAttribute("aria-label", t.browser.startingPoint(origin.name));
     const marker = new Marker({ element: dot })
       .setLngLat([origin.lng, origin.lat])
       .addTo(map);
@@ -158,7 +160,7 @@ export function PlacesMap({
     return () => {
       marker.remove();
     };
-  }, [ready, origin]);
+  }, [ready, origin, t]);
 
   // Sync markers whenever the (filtered) places change
   useEffect(() => {
@@ -202,11 +204,13 @@ export function PlacesMap({
         // Pin shows the main (first) category; popup lists them all
         const { icon: Icon } = CATEGORIES[place.categories[0]];
         const label = place.categories
-          .map((c) => CATEGORIES[c].label)
+          .map((c) => t.categories[c].label)
           .join(" · ");
         // Distances from the chosen area if any, else from the device
         const from = origin ?? me;
-        const distance = from ? formatDistance(distanceKm(from, place)) : null;
+        const distance = from
+          ? formatDistance(distanceKm(from, place), intl)
+          : null;
         // Unknown hours: no status shown, pin stays blue
         const status =
           time && place.hours && place.timezone
@@ -219,8 +223,8 @@ export function PlacesMap({
               type="button"
               aria-label={[
                 place.name,
-                closed && "closed",
-                distance && `${distance} away`,
+                closed && t.browser.closed,
+                distance && t.common.away(distance),
               ]
                 .filter(Boolean)
                 .join(", ")}
@@ -257,7 +261,7 @@ export function PlacesMap({
           createPortal(
             // The whole card opens the place; the map closes it
             <Link
-              href={`/places/${place.id}${tripQuery}`}
+              href={path(`/places/${place.id}${tripQuery}`)}
               className="flex w-64 items-center gap-3 p-3"
             >
               {place.image ? (
@@ -279,7 +283,7 @@ export function PlacesMap({
                   {place.name}
                 </span>
                 <span className="truncate text-xs text-muted-foreground">
-                  {[label, distance && `${distance} away`]
+                  {[label, distance && t.common.away(distance)]
                     .filter(Boolean)
                     .join(" · ")}
                 </span>
@@ -287,7 +291,7 @@ export function PlacesMap({
                   <span
                     className={`truncate text-xs font-medium ${status.open ? "text-primary" : "text-muted-foreground"}`}
                   >
-                    {status.label}
+                    {t.status(status)}
                   </span>
                 )}
               </span>

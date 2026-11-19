@@ -1,5 +1,6 @@
 // Run: bun src/lib/opening.check.ts
 import assert from "node:assert/strict";
+import { en } from "../i18n/dictionaries/en";
 import { openStatus } from "./opening";
 
 const JKT = "Asia/Jakarta"; // UTC+7, no DST
@@ -16,7 +17,7 @@ const mall = {
   sat: ["10:00-22:00"],
 };
 const s = (h: object, d: string, t: string, tz = JKT) =>
-  openStatus(h, tz, at(d, t)).label;
+  en.status(openStatus(h, tz, at(d, t)));
 
 assert.equal(s(mall, MON, "12:00"), "Open · Closes 22:00");
 assert.equal(s(mall, MON, "09:59"), "Closed · Opens 10:00");
