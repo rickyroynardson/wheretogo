@@ -6,7 +6,7 @@ import { Suspense } from "react";
 import { BackButton } from "@/components/back-button";
 import { LocalTimeNote, TripOpenStatus } from "@/components/open-status";
 import { OpeningHours } from "@/components/opening-hours";
-import { CATEGORIES } from "@/data/constants";
+import { CATEGORIES, priceSymbol, TAGS } from "@/data/constants";
 import { PLACES, type Place } from "@/data/places";
 import type { I18n } from "@/i18n";
 import { getI18n } from "@/i18n/server";
@@ -110,6 +110,15 @@ async function PlaceDetails({ params }: { params: Params }) {
               badge
             />
           )}
+          {place.price && (
+            <span
+              title={t.prices[place.price]}
+              className="rounded-full bg-muted px-2.5 py-1 text-xs font-medium text-muted-foreground"
+            >
+              {priceSymbol(place.price)}
+              <span className="sr-only"> ({t.prices[place.price]})</span>
+            </span>
+          )}
           {place.categories.map((category) => {
             const { icon: Icon } = CATEGORIES[category];
             const { label } = t.categories[category];
@@ -148,6 +157,33 @@ async function PlaceDetails({ params }: { params: Params }) {
         <section className="flex flex-col gap-2">
           <h2 className="font-semibold">{t.place.about}</h2>
           <p className="text-sm">{place.description}</p>
+        </section>
+      )}
+
+      {place.tags && (
+        <section className="flex flex-col gap-2">
+          <h2 className="font-semibold">{t.place.goodToKnow}</h2>
+          <ul className="flex flex-wrap gap-2">
+            {/* TAGS order, not data order, so every page lists them alike */}
+            {(Object.keys(TAGS) as (keyof typeof TAGS)[])
+              .filter((tag) => place.tags?.includes(tag))
+              .map((tag) => {
+                const { icon: Icon } = TAGS[tag];
+                return (
+                  <li
+                    key={tag}
+                    className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1 text-sm"
+                  >
+                    <Icon
+                      className="size-4 text-primary"
+                      strokeWidth={2.25}
+                      aria-hidden
+                    />
+                    {t.tags[tag]}
+                  </li>
+                );
+              })}
+          </ul>
         </section>
       )}
 

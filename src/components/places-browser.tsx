@@ -22,7 +22,17 @@ import { useTripQuery } from "@/components/back-button";
 import { OpenStatus } from "@/components/open-status";
 import { PlacesMap } from "@/components/places-map";
 import { findArea } from "@/data/areas";
-import { CATEGORIES, type Category, isCategory } from "@/data/constants";
+import {
+  CATEGORIES,
+  type Category,
+  isCategory,
+  isPrice,
+  isTag,
+  type Price,
+  priceSymbol,
+  TAGS,
+  type Tag,
+} from "@/data/constants";
 import type { Place } from "@/data/places";
 import { useI18n } from "@/i18n/client";
 import { distanceKm, formatDistance } from "@/lib/distance";
@@ -63,7 +73,8 @@ const field =
   "w-full cursor-pointer rounded-xl bg-muted px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary disabled:cursor-not-allowed disabled:opacity-50";
 
 // All filter state lives in the URL:
-// ?view=list&category=cafe,mall&q=kopi&status=open&within=3&sort=nearest
+// ?view=list&category=cafe,mall&tags=wifi,work&price=2&q=kopi&status=open
+// &within=3&sort=nearest
 export function PlacesBrowser({ places }: { places: Place[] }) {
   const params = useSearchParams();
   const { t, intl, path } = useI18n();
@@ -77,6 +88,12 @@ export function PlacesBrowser({ places }: { places: Place[] }) {
     () => categoryParam.split(",").filter(isCategory),
     [categoryParam],
   );
+  const tagsParam = params.get("tags") ?? "";
+  const tags = useMemo(() => tagsParam.split(",").filter(isTag), [tagsParam]);
+  // Highest price level wanted; 3 would be "any", so only 1 and 2 count
+  const priceParam = Number(params.get("price"));
+  const maxPrice: Price | null =
+    isPrice(priceParam) && priceParam < 3 ? priceParam : null;
   const statusParam = params.get("status");
   const status: Status | null =
     statusParam === "open" || statusParam === "closed" ? statusParam : null;
@@ -142,11 +159,12 @@ export function PlacesBrowser({ places }: { places: Place[] }) {
     if (next) needLocation({ within: null });
   }
 
-  function toggleCategory(c: Category) {
-    const next = categories.includes(c)
-      ? categories.filter((x) => x !== c)
-      : [...categories, c];
-    setParams({ category: next.join(",") || null });
+  // Add or remove one value of a comma-separated list param
+  function toggleIn<T extends string>(key: string, list: T[], value: T) {
+    const next = list.includes(value)
+      ? list.filter((x) => x !== value)
+      : [...list, value];
+    setParams({ [key]: next.join(",") || null });
   }
 
   useEffect(() => {
@@ -155,7 +173,7 @@ export function PlacesBrowser({ places }: { places: Place[] }) {
     return () => clearInterval(timer);
   }, []);
 
-  // Only offer categories that actually have places
+  // Only offer categories, tags and prices that actually have places
   const available = useMemo(
     () =>
       (Object.keys(CATEGORIES) as Category[]).filter((c) =>
@@ -163,6 +181,14 @@ export function PlacesBrowser({ places }: { places: Place[] }) {
       ),
     [places],
   );
+  const availableTags = useMemo(
+    () =>
+      (Object.keys(TAGS) as Tag[]).filter((tag) =>
+        places.some((p) => p.tags?.includes(tag)),
+      ),
+    [places],
+  );
+  const hasPrices = places.some((p) => p.price);
 
   // Filters apply to both map and list
   const matches = useMemo(() => {
@@ -180,6 +206,10 @@ export function PlacesBrowser({ places }: { places: Place[] }) {
         ) {
           return false;
         }
+        // Tags narrow down: a place needs every picked one
+        if (tags.some((tag) => !place.tags?.includes(tag))) return false;
+        // Unknown price doesn't fit a budget
+        if (maxPrice && (!place.price || place.price > maxPrice)) return false;
         if (status) {
           // Unknown hours match neither "open" nor "closed"
           if (!time || !place.hours || !place.timezone) return false;
@@ -188,11 +218,26 @@ export function PlacesBrowser({ places }: { places: Place[] }) {
         }
         if (within && (km === null || km > within)) return false;
         if (!q) return true;
-        return [place.name, place.address, place.description].some(
-          (field) => field && normalize(field).includes(q),
-        );
+        // Tag names count too, so "wifi" or "halal" finds places
+        return [
+          place.name,
+          place.address,
+          place.description,
+          ...(place.tags ?? []).map((tag) => t.tags[tag]),
+        ].some((field) => field && normalize(field).includes(q));
       });
-  }, [places, query, categories, status, within, time, origin]);
+  }, [
+    places,
+    query,
+    categories,
+    tags,
+    maxPrice,
+    status,
+    within,
+    time,
+    origin,
+    t,
+  ]);
 
   // Sorting only matters for the list
   const results = useMemo(() => {
@@ -210,7 +255,11 @@ export function PlacesBrowser({ places }: { places: Place[] }) {
   }, [matches, sort, origin]);
 
   const activeFilters =
-    (categories.length ? 1 : 0) + (status ? 1 : 0) + (within ? 1 : 0);
+    (categories.length ? 1 : 0) +
+    (tags.length ? 1 : 0) +
+    (maxPrice ? 1 : 0) +
+    (status ? 1 : 0) +
+    (within ? 1 : 0);
   const filtered = query.trim() !== "" || activeFilters > 0;
 
   // "Cafés & Malls" when categories are picked, else "All places"
@@ -235,11 +284,20 @@ export function PlacesBrowser({ places }: { places: Place[] }) {
   );
 
   const clearAll = () =>
-    setParams({ q: null, category: null, status: null, within: null });
+    setParams({
+      q: null,
+      category: null,
+      tags: null,
+      price: null,
+      status: null,
+      within: null,
+    });
 
   // Short summary of active filters for the map pill
   const summary = [
     ...categories.map((c) => t.categories[c].label),
+    ...tags.map((tag) => t.tags[tag]),
+    maxPrice ? priceSymbol(maxPrice) : null,
     status === "open" ? b.openNow : status === "closed" ? b.closedNow : null,
     within ? b.within(within) : null,
     query.trim() ? `“${query.trim()}”` : null,
@@ -334,18 +392,67 @@ export function PlacesBrowser({ places }: { places: Place[] }) {
           </div>
 
           {showFilters && (
-            <div id="filters" className="grid grid-cols-3 gap-2">
+            <div id="filters" className="grid grid-cols-2 gap-2">
               <div className="flex flex-col gap-1">
                 <span className="text-xs text-muted-foreground">
                   {b.category}
                 </span>
-                <CategorySelect
-                  options={available}
+                <CheckboxSelect
+                  label={b.categories}
+                  allLabel={b.allCategories}
+                  options={available.map((c) => ({
+                    value: c,
+                    label: t.categories[c].label,
+                  }))}
                   selected={categories}
-                  onToggle={toggleCategory}
+                  onToggle={(c) => toggleIn("category", categories, c)}
                   onClear={() => setParams({ category: null })}
                 />
               </div>
+
+              {availableTags.length > 0 && (
+                <div className="flex flex-col gap-1">
+                  <span className="text-xs text-muted-foreground">
+                    {b.features}
+                  </span>
+                  <CheckboxSelect
+                    label={b.features}
+                    allLabel={b.allFeatures}
+                    options={availableTags.map((tag) => ({
+                      value: tag,
+                      label: t.tags[tag],
+                    }))}
+                    selected={tags}
+                    onToggle={(tag) => toggleIn("tags", tags, tag)}
+                    onClear={() => setParams({ tags: null })}
+                  />
+                </div>
+              )}
+
+              {hasPrices && (
+                <div className="flex flex-col gap-1">
+                  <span className="text-xs text-muted-foreground">
+                    {b.price}
+                  </span>
+                  <OptionSelect
+                    label={b.price}
+                    value={maxPrice ? String(maxPrice) : "any"}
+                    onChange={(v) =>
+                      setParams({ price: v === "any" ? null : v })
+                    }
+                    options={[
+                      { value: "any", label: t.common.any },
+                      ...([1, 2] as const).map((level) => ({
+                        value: String(level),
+                        label: b.priceUpTo(
+                          priceSymbol(level),
+                          b.priceMax[level],
+                        ),
+                      })),
+                    ]}
+                  />
+                </div>
+              )}
 
               <div className="flex flex-col gap-1">
                 <span className="text-xs text-muted-foreground">
@@ -642,38 +749,43 @@ function OptionSelect({
 }
 
 // Pick-many dropdown (checkboxes); stays open while ticking
-function CategorySelect({
+function CheckboxSelect<T extends string>({
+  label,
+  allLabel,
   options,
   selected,
   onToggle,
   onClear,
 }: {
-  options: Category[];
-  selected: Category[];
-  onToggle: (c: Category) => void;
+  label: string;
+  // Summary when nothing is ticked
+  allLabel: string;
+  options: { value: T; label: string }[];
+  selected: T[];
+  onToggle: (value: T) => void;
   onClear: () => void;
 }) {
   const { t } = useI18n();
   const summary =
     selected.length === 0
-      ? t.browser.allCategories
+      ? allLabel
       : selected.length === 1
-        ? t.categories[selected[0]].label
+        ? (options.find((o) => o.value === selected[0])?.label ?? allLabel)
         : t.browser.selected(selected.length);
 
   return (
-    <Dropdown label={t.browser.categories} summary={summary}>
+    <Dropdown label={label} summary={summary}>
       {() => (
         <>
-          {options.map((c) => (
-            <label key={c} className={optionRow}>
+          {options.map((o) => (
+            <label key={o.value} className={optionRow}>
               <input
                 type="checkbox"
-                checked={selected.includes(c)}
-                onChange={() => onToggle(c)}
+                checked={selected.includes(o.value)}
+                onChange={() => onToggle(o.value)}
                 className="size-4 accent-primary"
               />
-              {t.categories[c].label}
+              {o.label}
             </label>
           ))}
           {selected.length > 0 && (
@@ -704,7 +816,13 @@ function PlaceItem({
   const tripQuery = useTripQuery();
   const { t, path } = useI18n();
   const { icon: Icon } = CATEGORIES[place.categories[0]];
-  const label = place.categories.map((c) => t.categories[c].label).join(" · ");
+  // "Café · $$": categories, then the price level when known
+  const label = [
+    ...place.categories.map((c) => t.categories[c].label),
+    place.price && priceSymbol(place.price),
+  ]
+    .filter(Boolean)
+    .join(" · ");
 
   return (
     <li className="border-b border-border last:border-b-0">

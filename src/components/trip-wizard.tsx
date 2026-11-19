@@ -66,7 +66,12 @@ function writeRecent(areas: Area[]) {
 // Home flow: what -> from where -> when -> results. Steps are local state
 // (Next keeps the page alive, so it survives navigating away and back);
 // only the final answers go into the results URL.
-export function TripWizard() {
+export function TripWizard({
+  intentIds,
+}: {
+  // Intents that have at least one place (worked out on the server)
+  intentIds: Intent["id"][];
+}) {
   const router = useRouter();
   const { t, path } = useI18n();
   const w = t.wizard;
@@ -105,6 +110,7 @@ export function TripWizard() {
   function showResults(options: { area?: Area | null; at?: string } = {}) {
     const params = new URLSearchParams({ view: "list" });
     if (what) params.set("category", what.categories.join(","));
+    if (what?.tags) params.set("tags", what.tags.join(","));
     if (options.area) params.set("from", options.area.id);
     if (options.at) params.set("at", options.at);
     // ":" and "," are safe in a query string; keep the URL readable
@@ -179,18 +185,20 @@ export function TripWizard() {
                 {w.whatTitle}
               </motion.h2>
               <motion.ul variants={list} className="flex flex-col gap-2">
-                {INTENTS.map((intent) => (
-                  <Option
-                    key={intent.id}
-                    icon={intent.icon}
-                    label={t.intents[intent.id]}
-                    selected={what?.id === intent.id}
-                    onClick={() => {
-                      setWhat(intent);
-                      setStep("from");
-                    }}
-                  />
-                ))}
+                {INTENTS.filter((intent) => intentIds.includes(intent.id)).map(
+                  (intent) => (
+                    <Option
+                      key={intent.id}
+                      icon={intent.icon}
+                      label={t.intents[intent.id]}
+                      selected={what?.id === intent.id}
+                      onClick={() => {
+                        setWhat(intent);
+                        setStep("from");
+                      }}
+                    />
+                  ),
+                )}
                 <Option
                   icon={Sparkles}
                   label={w.anything}

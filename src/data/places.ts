@@ -1,5 +1,13 @@
 import { z } from "zod";
-import { CATEGORIES, type Category, DAYS } from "./constants";
+import {
+  CATEGORIES,
+  type Category,
+  DAYS,
+  PRICES,
+  type Price,
+  TAGS,
+  type Tag,
+} from "./constants";
 import placesJson from "./places.json";
 
 // "09:00-22:00". End may pass midnight ("18:00-02:00"); "00:00-24:00" = all day.
@@ -71,6 +79,18 @@ const place = z
     // Website or social profile, shown as the button next to Navigate
     link: z.url({ protocol: /^https$/ }).optional(),
     description: z.string().min(1).optional(),
+    // What it offers (wifi, parking, ...); see TAGS in constants.ts
+    tags: z
+      .array(z.enum(Object.keys(TAGS) as [Tag, ...Tag[]]))
+      .min(1)
+      .refine((list) => new Set(list).size === list.length, "Duplicate tag")
+      .optional(),
+    // Typical spend per person: 1 under Rp 50k, 2 Rp 50-150k, 3 over Rp 150k
+    price: z
+      .number()
+      .refine((n) => (PRICES as readonly number[]).includes(n), "Use 1, 2 or 3")
+      .transform((n) => n as Price)
+      .optional(),
     // Hours are in this timezone (the place's local time)
     hours: hours.optional(),
     timezone: timezone.optional(),

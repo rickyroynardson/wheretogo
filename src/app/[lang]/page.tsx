@@ -1,6 +1,8 @@
 import { ChevronRight, Map as MapIcon } from "lucide-react";
 import Link from "next/link";
 import { TripWizard } from "@/components/trip-wizard";
+import { INTENTS, intentHasPlaces } from "@/data/intents";
+import { PLACES } from "@/data/places";
 import { getI18n } from "@/i18n/server";
 
 export default async function Home() {
@@ -11,7 +13,11 @@ export default async function Home() {
         <h1 className="text-4xl font-bold tracking-tight">{t.home.title}</h1>
       </div>
 
-      <TripWizard />
+      <TripWizard
+        intentIds={INTENTS.filter((intent) =>
+          intentHasPlaces(intent, PLACES),
+        ).map((intent) => intent.id)}
+      />
 
       <Link
         href={path("/places")}

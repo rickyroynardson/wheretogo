@@ -1,6 +1,6 @@
 // English UI text. This file defines the shape every other language must
 // match (see id.ts); TypeScript flags a missing or extra key.
-import type { Category } from "@/data/constants";
+import type { Category, Price, Tag } from "@/data/constants";
 import type { Day, OpenStatus } from "@/lib/opening";
 
 const SHORT_DAYS: Record<Day, string> = {
@@ -43,11 +43,27 @@ export const en = {
     park: { label: "Park", plural: "Parks" },
     bar: { label: "Bar", plural: "Bars" },
   } satisfies Record<Category, { label: string; plural: string }>,
+  tags: {
+    wifi: "Wi-Fi",
+    work: "Good for working",
+    outdoor: "Outdoor seating",
+    halal: "Halal",
+    parking: "Parking",
+    kids: "Kid-friendly",
+    smoking: "Smoking area",
+  } satisfies Record<Tag, string>,
+  // Typical spend per person, by price level
+  prices: {
+    1: "Under Rp 50k per person",
+    2: "Rp 50–150k per person",
+    3: "Over Rp 150k per person",
+  } satisfies Record<Price, string>,
   // Keys match the ids in data/intents.ts
   intents: {
     coffee: "Coffee or a chill spot",
     hangout: "Hang out with friends",
     eat: "Something to eat",
+    work: "Work or study",
   },
   wizard: {
     whatTitle: "What are you looking for?",
@@ -110,6 +126,14 @@ export const en = {
     openNow: "Open now",
     closedNow: "Closed now",
     distance: "Distance",
+    features: "Features",
+    allFeatures: "Any",
+    price: "Price",
+    priceUpTo: (symbol: string, max: string) => `${symbol} · ${max}`,
+    priceMax: {
+      1: "under Rp 50k",
+      2: "under Rp 150k",
+    },
     within: (km: number) => `Within ${km} km`,
     locationFailed: "Couldn't get your location.",
     places: (count: number) => `${count} ${count === 1 ? "place" : "places"}`,
@@ -133,6 +157,7 @@ export const en = {
     photoBy: "Photo by:",
     navigate: "Navigate",
     about: "About",
+    goodToKnow: "Good to know",
     openingHours: "Opening hours",
     website: "Website",
     on: (name: string, site: string) => `${name} on ${site}`,
