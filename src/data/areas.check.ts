@@ -26,4 +26,20 @@ assert.deepEqual(
   [],
   "short non-matching query has no typo matches",
 );
+assert.equal(
+  names("harbour")[0],
+  "HarbourBay Ferry Terminal",
+  "terminal alias",
+);
+assert.equal(
+  names("bcft")[0],
+  "Batam Centre Ferry Terminal",
+  "terminal acronym",
+);
+assert.equal(names("batam centre")[0], "Batam Centre", "area beats terminal");
+assert.ok(
+  names("batam centre").includes("Batam Centre Ferry Terminal"),
+  "terminal still listed",
+);
+assert.equal(names("marina city")[0], "Waterfront City Ferry Terminal");
 console.log("areas search ok");

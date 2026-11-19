@@ -8,6 +8,8 @@ export type Area = {
   lng: number;
   // Other names people use for the same area (neighbourhoods, landmarks)
   aliases?: string[];
+  // Ferry terminals get their own "Arriving by ferry" step on the home page
+  kind?: "terminal";
 };
 
 export const AREAS: Area[] = [
@@ -53,8 +55,57 @@ export const AREAS: Area[] = [
   },
 ];
 
+// International ferry terminals with Singapore routes, for visitors who just
+// arrived. Coordinates from OpenStreetMap (terminal buildings).
+// Order here is the order in the "Arriving by ferry" list.
+export const TERMINALS: Area[] = [
+  {
+    id: "harbourbay",
+    name: "HarbourBay Ferry Terminal",
+    lat: 1.1533,
+    lng: 103.9967,
+    aliases: ["Harbour Bay", "Batu Ampar ferry"],
+    kind: "terminal",
+  },
+  {
+    id: "batam-centre-ferry",
+    name: "Batam Centre Ferry Terminal",
+    lat: 1.1318,
+    lng: 104.0554,
+    aliases: ["BCFT", "Batam Center ferry", "Pelabuhan Batam Centre"],
+    kind: "terminal",
+  },
+  {
+    id: "sekupang-ferry",
+    name: "Sekupang Ferry Terminal",
+    lat: 1.125,
+    lng: 103.925,
+    aliases: ["Pelabuhan Sekupang"],
+    kind: "terminal",
+  },
+  {
+    id: "nongsa-pura",
+    name: "Nongsa Pura Ferry Terminal",
+    lat: 1.196,
+    lng: 104.0985,
+    aliases: ["Nongsa Point Marina", "Nongsapura"],
+    kind: "terminal",
+  },
+  {
+    id: "waterfront-city",
+    name: "Waterfront City Ferry Terminal",
+    lat: 1.0793,
+    lng: 103.9304,
+    aliases: ["Marina City", "Teluk Senimba"],
+    kind: "terminal",
+  },
+];
+
+// Everything the search box and ?from= understand
+const ALL_AREAS = [...AREAS, ...TERMINALS];
+
 export const findArea = (id: string | null) =>
-  AREAS.find((area) => area.id === id) ?? null;
+  ALL_AREAS.find((area) => area.id === id) ?? null;
 
 // Lowercase, strip accents and punctuation, so "Batam-Centre" ≈ "batam centre"
 const normalize = (text: string) =>
@@ -106,7 +157,7 @@ function score(name: string, q: string) {
 export function searchAreas(query: string, limit = 8) {
   const q = normalize(query);
   if (!q) return [];
-  return AREAS.map((area) => {
+  return ALL_AREAS.map((area) => {
     const scores = [area.name, ...(area.aliases ?? [])]
       .map((name) => score(name, q))
       .filter((s) => s !== null);

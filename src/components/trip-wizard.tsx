@@ -9,6 +9,7 @@ import {
   MapPin,
   RotateCwFadingClock,
   Search,
+  Ship,
   Sparkles,
 } from "lucide-react";
 import { MotionConfig, motion } from "motion/react";
@@ -16,7 +17,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useId, useState } from "react";
 import { Drawer } from "@/components/drawer";
 import { TimePicker } from "@/components/time-picker";
-import { type Area, findArea, searchAreas } from "@/data/areas";
+import { type Area, findArea, searchAreas, TERMINALS } from "@/data/areas";
 import { INTENTS, type Intent } from "@/data/intents";
 import { useI18n } from "@/i18n/client";
 
@@ -74,7 +75,8 @@ export function TripWizard() {
   const [what, setWhat] = useState<What | undefined>(undefined);
   const [from, setFrom] = useState<From>(null);
   const area = from === "me" ? null : from;
-  const [drawer, setDrawer] = useState<"area" | "time" | null>(null);
+  const terminal = area?.kind === "terminal" ? area : null;
+  const [drawer, setDrawer] = useState<"area" | "ferry" | "time" | null>(null);
   const [locating, setLocating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [areaQuery, setAreaQuery] = useState("");
@@ -220,11 +222,19 @@ export function TripWizard() {
                   onClick={useMyLocation}
                 />
                 <Option
+                  icon={Ship}
+                  // Visitors from Singapore start at the terminal they land at
+                  label={terminal ? terminal.name : w.ferry}
+                  hint={terminal ? w.tapToChange : w.ferryHint}
+                  selected={terminal !== null}
+                  onClick={() => setDrawer("ferry")}
+                />
+                <Option
                   icon={MapPin}
                   // Once picked, the card shows the area itself
-                  label={area ? area.name : w.somewhereElse}
-                  hint={area ? w.tapToChange : undefined}
-                  selected={area !== null}
+                  label={area && !terminal ? area.name : w.somewhereElse}
+                  hint={area && !terminal ? w.tapToChange : undefined}
+                  selected={area !== null && !terminal}
                   onClick={() => setDrawer("area")}
                 />
                 <Option
@@ -354,6 +364,15 @@ export function TripWizard() {
         </Drawer>
 
         <Drawer
+          open={drawer === "ferry"}
+          onClose={() => setDrawer(null)}
+          title={w.ferryTitle}
+        >
+          <p className="pb-1 text-sm text-muted-foreground">{w.ferryNote}</p>
+          <AreaList areas={TERMINALS} icon={Ship} onPick={pickArea} />
+        </Drawer>
+
+        <Drawer
           open={drawer === "time"}
           onClose={() => setDrawer(null)}
           title={w.leavingAt}
@@ -412,7 +431,18 @@ function AreaList({
           }}
           className={`-mx-2 flex cursor-pointer items-center gap-3 rounded-lg border-b border-border px-2 py-3 text-sm outline-none last:border-b-0 focus-visible:ring-2 focus-visible:ring-primary ${id && i === active ? "bg-muted" : ""}`}
         >
-          <Icon className="size-4 shrink-0 text-muted-foreground" aria-hidden />
+          {/* Terminals in search results get a ship instead of the pin */}
+          {a.kind === "terminal" && Icon === MapPin ? (
+            <Ship
+              className="size-4 shrink-0 text-muted-foreground"
+              aria-hidden
+            />
+          ) : (
+            <Icon
+              className="size-4 shrink-0 text-muted-foreground"
+              aria-hidden
+            />
+          )}
           <span className="flex flex-col">
             {a.name}
             {/* Other names explain why "Jodoh" finds Nagoya */}
