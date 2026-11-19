@@ -3,13 +3,14 @@
 import {
   ChevronDown,
   ChevronRight,
+  Dices,
   Search,
   SlidersHorizontal,
   X,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   type ReactNode,
   useEffect,
@@ -37,6 +38,7 @@ import type { Place } from "@/data/places";
 import { useI18n } from "@/i18n/client";
 import { distanceKm, formatDistance } from "@/lib/distance";
 import { openStatus } from "@/lib/opening";
+import { pickOne } from "@/lib/pick";
 
 type Sort = "default" | "name" | "nearest";
 type Status = "open" | "closed";
@@ -79,6 +81,10 @@ export function PlacesBrowser({ places }: { places: Place[] }) {
   const params = useSearchParams();
   const { t, intl, path } = useI18n();
   const b = t.browser;
+  const router = useRouter();
+  const tripQuery = useTripQuery();
+  // Last place "Pick one" chose, so pressing again offers another
+  const lastPick = useRef<number | null>(null);
   // Anything invalid in the URL falls back to the default
   const view = params.get("view") === "list" ? "list" : "map";
   const query = params.get("q") ?? "";
@@ -283,6 +289,24 @@ export function PlacesBrowser({ places }: { places: Place[] }) {
     matches.some(({ place }) => place.categories.includes(c)),
   );
 
+  // One open, nearby place from the current results, opened right away
+  function pickForMe() {
+    const picked = pickOne(
+      matches.map(({ place, km }) => ({
+        item: place.id,
+        km,
+        open:
+          time && place.hours && place.timezone
+            ? openStatus(place.hours, place.timezone, time).open
+            : null,
+      })),
+      { avoid: lastPick.current ?? undefined },
+    );
+    if (picked === null) return;
+    lastPick.current = picked;
+    router.push(path(`/places/${picked}${tripQuery}`));
+  }
+
   const clearAll = () =>
     setParams({
       q: null,
@@ -336,6 +360,16 @@ export function PlacesBrowser({ places }: { places: Place[] }) {
           </Link>
         </p>
       )}
+
+      <button
+        type="button"
+        onClick={pickForMe}
+        disabled={matches.length === 0}
+        className="mb-3 flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 font-medium text-primary-foreground disabled:cursor-not-allowed disabled:opacity-50"
+      >
+        <Dices className="size-5" aria-hidden />
+        {b.pickForMe}
+      </button>
 
       <div
         role="tablist"

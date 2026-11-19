@@ -111,6 +111,8 @@ export const en = {
   },
   browser: {
     allPlaces: "All places",
+    // Opens one open, nearby place from the current results
+    pickForMe: "Pick one for me",
     from: (area: string) => `From ${area}`,
     leaving: (when: string) => `Leaving ${when}`,
     view: "View",

@@ -107,6 +107,7 @@ export const id: Dictionary = {
   },
   browser: {
     allPlaces: "Semua tempat",
+    pickForMe: "Pilihkan satu",
     from: (area) => `Dari ${area}`,
     leaving: (when) => `Berangkat ${when}`,
     view: "Tampilan",
