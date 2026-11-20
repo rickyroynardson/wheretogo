@@ -21,7 +21,9 @@
       "sun": ["10:00-22:00"]
     },
     "timezone": "Asia/Jakarta",
-    "link": "https://www.instagram.com/mulapatisserie/"
+    "link": "https://www.instagram.com/mulapatisserie/",
+    "tags": ["wifi"],
+    "price": 2
   },
   {
     "id": 2,
@@ -45,7 +47,9 @@
       "sun": ["10:00-23:00"]
     },
     "timezone": "Asia/Jakarta",
-    "link": "https://www.instagram.com/musoartcafe.id/"
+    "link": "https://www.instagram.com/musoartcafe.id/",
+    "tags": ["wifi"],
+    "price": 1
   },
   {
     "id": 3,
@@ -197,7 +201,9 @@
       "sun": ["09:00-22:00"]
     },
     "timezone": "Asia/Jakarta",
-    "link": "https://www.instagram.com/joyibakes/"
+    "link": "https://www.instagram.com/joyibakes/",
+    "tags": ["wifi"],
+    "price": 2
   },
   {
     "id": 9,
@@ -222,7 +228,9 @@
       "sun": ["08:00-22:00"]
     },
     "timezone": "Asia/Jakarta",
-    "link": "https://www.instagram.com/oddbycs/"
+    "link": "https://www.instagram.com/oddbycs/",
+    "tags": ["wifi", "work"],
+    "price": 2
   },
   {
     "id": 10,
@@ -245,7 +253,9 @@
       "sat": ["09:30-23:00"],
       "sun": ["09:30-23:00"]
     },
-    "timezone": "Asia/Jakarta"
+    "timezone": "Asia/Jakarta",
+    "tags": ["outdoor", "parking", "kids"],
+    "price": 2
   },
   {
     "id": 11,
@@ -268,7 +278,8 @@
       "sat": ["07:00-23:30"],
       "sun": ["07:00-20:30"]
     },
-    "timezone": "Asia/Jakarta"
+    "timezone": "Asia/Jakarta",
+    "price": 2
   },
   {
     "id": 12,
@@ -290,7 +301,8 @@
       "sat": ["10:30-22:00"],
       "sun": ["10:30-22:00"]
     },
-    "timezone": "Asia/Jakarta"
+    "timezone": "Asia/Jakarta",
+    "price": 1
   },
   {
     "id": 13,
@@ -313,7 +325,8 @@
       "sat": ["07:00-24:00"],
       "sun": ["07:00-24:00"]
     },
-    "timezone": "Asia/Jakarta"
+    "timezone": "Asia/Jakarta",
+    "price": 1
   },
   {
     "id": 14,
@@ -336,7 +349,9 @@
       "sat": ["00:00-24:00"],
       "sun": ["00:00-24:00"]
     },
-    "timezone": "Asia/Jakarta"
+    "timezone": "Asia/Jakarta",
+    "tags": ["outdoor", "parking", "kids"],
+    "price": 1
   },
   {
     "id": 15,
@@ -359,7 +374,9 @@
       "sat": ["07:00-18:00"],
       "sun": ["07:00-18:00"]
     },
-    "timezone": "Asia/Jakarta"
+    "timezone": "Asia/Jakarta",
+    "tags": ["outdoor", "kids"],
+    "price": 1
   },
   {
     "id": 16,
@@ -382,7 +399,9 @@
       "sun": ["10:00-18:00"]
     },
     "timezone": "Asia/Jakarta",
-    "link": "https://panbilhospitality.com/panbil-nature-reserve/"
+    "link": "https://panbilhospitality.com/panbil-nature-reserve/",
+    "tags": ["outdoor", "parking", "kids"],
+    "price": 1
   },
   {
     "id": 17,
@@ -405,7 +424,9 @@
       "sun": ["12:00-24:00"]
     },
     "timezone": "Asia/Jakarta",
-    "link": "https://linktr.ee/archalley"
+    "link": "https://linktr.ee/archalley",
+    "tags": ["outdoor", "smoking"],
+    "price": 2
   },
   {
     "id": 18,
@@ -428,7 +449,9 @@
       "sun": ["12:00-24:00"]
     },
     "timezone": "Asia/Jakarta",
-    "link": "https://porthouse.id/"
+    "link": "https://porthouse.id/",
+    "tags": ["outdoor", "smoking"],
+    "price": 2
   },
   {
     "id": 19,
@@ -450,7 +473,9 @@
       "sat": ["16:00-02:00"],
       "sun": ["16:00-02:00"]
     },
-    "timezone": "Asia/Jakarta"
+    "timezone": "Asia/Jakarta",
+    "tags": ["smoking"],
+    "price": 2
   },
   {
     "id": 20,
@@ -464,7 +489,9 @@
     "lat": 1.144061,
     "lng": 104.0182419,
     "address": "Komp. Regency Park Blok I No. 40, Jl. Teuku Umar, Kp. Pelita, Kec. Lubuk Baja, Kota Batam",
-    "link": "https://www.instagram.com/kobiecoffee/"
+    "link": "https://www.instagram.com/kobiecoffee/",
+    "tags": ["wifi", "work"],
+    "price": 1
   },
   {
     "id": 21,
@@ -487,7 +514,9 @@
       "sun": ["08:00-20:00"]
     },
     "timezone": "Asia/Jakarta",
-    "link": "https://www.facebook.com/anchorcafeandroastery/"
+    "link": "https://www.facebook.com/anchorcafeandroastery/",
+    "tags": ["wifi", "work", "outdoor"],
+    "price": 2
   },
   {
     "id": 22,
@@ -510,6 +539,8 @@
       "sat": ["10:00-24:00"],
       "sun": ["10:00-24:00"]
     },
-    "timezone": "Asia/Jakarta"
+    "timezone": "Asia/Jakarta",
+    "tags": ["wifi"],
+    "price": 1
   }
 ]
