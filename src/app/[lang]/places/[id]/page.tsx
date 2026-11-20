@@ -38,7 +38,11 @@ export async function generateMetadata({
   return pageMetadata({
     locale,
     path: `/places/${place.id}`,
-    title: place.name,
+    ownImage: true,
+    title: t.meta.placeTitle(
+      place.name,
+      t.categories[place.categories[0]].label,
+    ),
     // No description yet: "Café · Jl. ..." still says what and where
     description:
       place.description ??

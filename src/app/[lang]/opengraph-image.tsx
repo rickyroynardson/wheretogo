@@ -20,7 +20,7 @@ export default async function Image({
 }) {
   const { lang } = await params;
   const { t } = i18n(isLocale(lang) ? lang : DEFAULT_LOCALE);
-  const logo = await imageSrc("/logo.svg");
+  const logo = imageSrc("/logo.svg");
 
   return new ImageResponse(
     <div

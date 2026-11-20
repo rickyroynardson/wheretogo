@@ -12,11 +12,14 @@ export function pageMetadata({
   path,
   title,
   description,
+  ownImage = false,
 }: {
   locale: Locale;
   path: string;
   title?: string;
   description?: string;
+  // The page has its own opengraph-image file
+  ownImage?: boolean;
 }): Metadata {
   const url = localePath(locale, path);
   return {
@@ -40,6 +43,17 @@ export function pageMetadata({
       ),
       ...(title && { title }),
       ...(description && { description }),
+      // This openGraph replaces the layout's, image included, so point at
+      // the site preview. An images entry here would beat the page's own
+      // opengraph-image file, so leave it out for those pages.
+      ...(!ownImage && {
+        images: {
+          url: localePath(locale, "/opengraph-image"),
+          width: 1200,
+          height: 630,
+          alt: "WhereToGo",
+        },
+      }),
     },
   };
 }

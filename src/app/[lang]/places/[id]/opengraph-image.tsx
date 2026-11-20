@@ -22,8 +22,8 @@ export default async function Image({
   const { lang, id } = await params;
   const { t } = i18n(isLocale(lang) ? lang : DEFAULT_LOCALE);
   const place = PLACES.find((p) => String(p.id) === id);
-  const logo = await imageSrc("/logo.svg");
-  const photo = place?.image ? await imageSrc(place.image) : null;
+  const logo = imageSrc("/logo.svg");
+  const photo = place?.image ? imageSrc(place.image) : null;
 
   return new ImageResponse(
     <div

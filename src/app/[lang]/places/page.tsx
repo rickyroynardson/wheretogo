@@ -9,7 +9,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return pageMetadata({
     locale,
     path: "/places",
-    title: t.browser.allPlaces,
+    title: t.meta.placesTitle,
     description: t.meta.description,
   });
 }

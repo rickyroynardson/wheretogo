@@ -14,7 +14,10 @@ const SHORT_DAYS: Record<Day, string> = {
 
 export const id: Dictionary = {
   meta: {
+    title: "Cari tempat nongkrong di Batam",
     description: "Pilih tempat buat nongkrong, kencan, atau makan.",
+    placesTitle: "Semua tempat di Batam",
+    placeTitle: (name, category) => `${name}, ${category} di Batam`,
   },
   common: {
     back: "Kembali",

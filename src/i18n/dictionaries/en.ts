@@ -14,8 +14,13 @@ const SHORT_DAYS: Record<Day, string> = {
 };
 
 export const en = {
+  // Page titles and descriptions for search results and link previews
   meta: {
+    title: "Find a place to go in Batam",
     description: "Pick a spot for hangout, date, or food.",
+    placesTitle: "All places to go in Batam",
+    placeTitle: (name: string, category: string) =>
+      `${name}, ${category} in Batam`,
   },
   common: {
     back: "Back",

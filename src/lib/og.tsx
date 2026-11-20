@@ -1,5 +1,5 @@
 import "server-only";
-import { readFile } from "node:fs/promises";
+import { readFileSync } from "node:fs";
 import { extname, join } from "node:path";
 
 // Shared bits for the generated link previews (opengraph-image.tsx files).
@@ -23,12 +23,14 @@ const MIME: Record<string, string> = {
 };
 
 // A public/ path ("/images/places/1.jpg") as a data URL; remote https URLs
-// pass through, the renderer fetches them itself
-export async function imageSrc(src: string) {
+// pass through, the renderer fetches them itself. Sync on purpose: Cache
+// Components prerenders sync I/O, but an awaited read makes the route
+// dynamic, and a static route that awaits one fails at request time.
+export function imageSrc(src: string) {
   if (src.startsWith("https://")) return src;
   const mime = MIME[extname(src).toLowerCase()];
   if (!mime) return null;
-  const data = await readFile(join(process.cwd(), "public", src), "base64");
+  const data = readFileSync(join(process.cwd(), "public", src), "base64");
   return `data:${mime};base64,${data}`;
 }
 

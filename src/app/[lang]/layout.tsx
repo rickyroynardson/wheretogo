@@ -27,16 +27,18 @@ export function generateStaticParams() {
 
 export async function generateMetadata(): Promise<Metadata> {
   const { t, locale } = await getI18n();
+  // "WhereToGo" alone is too short for search results and previews
+  const title = `${SITE_NAME} · ${t.meta.title}`;
   return {
     // Defaults for every page; pages override path, title and description
     ...pageMetadata({
       locale,
       path: "/",
-      title: SITE_NAME,
+      title,
       description: t.meta.description,
     }),
     metadataBase: new URL(siteUrl()),
-    title: { default: SITE_NAME, template: `%s · ${SITE_NAME}` },
+    title: { default: title, template: `%s · ${SITE_NAME}` },
     icons: "/logo.svg",
     twitter: { card: "summary_large_image" },
   };
