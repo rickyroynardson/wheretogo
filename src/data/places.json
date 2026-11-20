@@ -223,5 +223,293 @@
     },
     "timezone": "Asia/Jakarta",
     "link": "https://www.instagram.com/oddbycs/"
+  },
+  {
+    "id": 10,
+    "name": "Golden Prawn 933",
+    "image": "/images/places/10.jpg",
+    "imageCredit": {
+      "name": "Muhammad Fadil",
+      "url": "https://maps.google.com/maps/contrib/111899865311404852186"
+    },
+    "categories": ["restaurant"],
+    "lat": 1.1595404,
+    "lng": 104.0374837,
+    "address": "Jl. Golden City Jaya, Tj. Buntung, Kec. Bengkong, Kota Batam",
+    "hours": {
+      "mon": ["09:30-23:00"],
+      "tue": ["09:30-23:00"],
+      "wed": ["09:30-23:00"],
+      "thu": ["09:30-23:00"],
+      "fri": ["09:30-23:00"],
+      "sat": ["09:30-23:00"],
+      "sun": ["09:30-23:00"]
+    },
+    "timezone": "Asia/Jakarta"
+  },
+  {
+    "id": 11,
+    "name": "Yong Kee Seafood",
+    "image": "/images/places/11.jpg",
+    "imageCredit": {
+      "name": "Novel",
+      "url": "https://maps.google.com/maps/contrib/105927696699448337394"
+    },
+    "categories": ["restaurant"],
+    "lat": 1.1463749,
+    "lng": 104.0068363,
+    "address": "Lubuk Baja Kota, Kec. Lubuk Baja, Kota Batam",
+    "hours": {
+      "mon": ["07:00-20:30"],
+      "tue": ["07:00-20:30"],
+      "wed": ["07:00-20:30"],
+      "thu": ["07:00-20:30"],
+      "fri": ["07:00-20:30"],
+      "sat": ["07:00-23:30"],
+      "sun": ["07:00-20:30"]
+    },
+    "timezone": "Asia/Jakarta"
+  },
+  {
+    "id": 12,
+    "name": "Bhinneka Indonesian Resto & Cafe",
+    "image": "/images/places/12.jpg",
+    "imageCredit": {
+      "name": "Business owner"
+    },
+    "categories": ["restaurant"],
+    "lat": 1.111893,
+    "lng": 104.0341596,
+    "address": "Limindo Trade Center 2 Blok A No. 13-14, Jl. Bakal, Taman Baloi, Kec. Batam Kota, Kota Batam",
+    "hours": {
+      "mon": ["10:30-22:00"],
+      "tue": ["10:30-22:00"],
+      "wed": ["10:30-22:00"],
+      "thu": ["10:30-22:00"],
+      "fri": ["10:30-22:00"],
+      "sat": ["10:30-22:00"],
+      "sun": ["10:30-22:00"]
+    },
+    "timezone": "Asia/Jakarta"
+  },
+  {
+    "id": 13,
+    "name": "Aroma Signature",
+    "image": "/images/places/13.jpg",
+    "imageCredit": {
+      "name": "Elis",
+      "url": "https://maps.google.com/maps/contrib/103022405868898302218"
+    },
+    "categories": ["restaurant", "cafe"],
+    "lat": 1.1117623,
+    "lng": 104.033044,
+    "address": "Komplek Limindo Trade Centre Blok A No. 8, Taman Baloi, Kec. Batam Kota, Kota Batam",
+    "hours": {
+      "mon": ["07:00-24:00"],
+      "tue": ["07:00-24:00"],
+      "wed": ["07:00-24:00"],
+      "thu": ["07:00-24:00"],
+      "fri": ["07:00-24:00"],
+      "sat": ["07:00-24:00"],
+      "sun": ["07:00-24:00"]
+    },
+    "timezone": "Asia/Jakarta"
+  },
+  {
+    "id": 14,
+    "name": "Dataran Engku Putri",
+    "image": "/images/places/14.jpg",
+    "imageCredit": {
+      "name": "Febi Masfar",
+      "url": "https://maps.google.com/maps/contrib/116345265614110011890"
+    },
+    "categories": ["park"],
+    "lat": 1.1274136,
+    "lng": 104.0545095,
+    "address": "Jl. Engku Putri No. 1, Tlk. Tering, Kec. Batam Kota, Kota Batam",
+    "hours": {
+      "mon": ["00:00-24:00"],
+      "tue": ["00:00-24:00"],
+      "wed": ["00:00-24:00"],
+      "thu": ["00:00-24:00"],
+      "fri": ["00:00-24:00"],
+      "sat": ["00:00-24:00"],
+      "sun": ["00:00-24:00"]
+    },
+    "timezone": "Asia/Jakarta"
+  },
+  {
+    "id": 15,
+    "name": "Taman Kolam Sekupang",
+    "image": "/images/places/15.jpg",
+    "imageCredit": {
+      "name": "Hendra Sefryandi",
+      "url": "https://maps.google.com/maps/contrib/114885767429336382364"
+    },
+    "categories": ["park"],
+    "lat": 1.1253777,
+    "lng": 103.9306981,
+    "address": "Jl. RE Martadinata, Tj. Pinggir, Kec. Sekupang, Kota Batam",
+    "hours": {
+      "mon": ["07:00-18:00"],
+      "tue": ["07:00-18:00"],
+      "wed": ["07:00-18:00"],
+      "thu": ["07:00-18:00"],
+      "fri": ["07:00-18:00"],
+      "sat": ["07:00-18:00"],
+      "sun": ["07:00-18:00"]
+    },
+    "timezone": "Asia/Jakarta"
+  },
+  {
+    "id": 16,
+    "name": "Panbil Nature Reserve",
+    "image": "/images/places/16.jpg",
+    "imageCredit": {
+      "name": "Business owner"
+    },
+    "categories": ["park"],
+    "lat": 1.0903505,
+    "lng": 104.0302379,
+    "address": "Jl. Ahmad Yani, Sukajadi, Kec. Batam Kota, Kota Batam",
+    "hours": {
+      "mon": ["10:00-18:00"],
+      "tue": ["10:00-18:00"],
+      "wed": ["10:00-18:00"],
+      "thu": ["10:00-18:00"],
+      "fri": ["10:00-18:00"],
+      "sat": ["10:00-18:00"],
+      "sun": ["10:00-18:00"]
+    },
+    "timezone": "Asia/Jakarta",
+    "link": "https://panbilhospitality.com/panbil-nature-reserve/"
+  },
+  {
+    "id": 17,
+    "name": "Arch Alley",
+    "image": "/images/places/17.jpg",
+    "imageCredit": {
+      "name": "Business owner"
+    },
+    "categories": ["bar", "restaurant"],
+    "lat": 1.1264709,
+    "lng": 104.0257878,
+    "address": "Komplek Rezeki Graha Blok C1, Sungai Panas, Kec. Batam Kota, Kota Batam",
+    "hours": {
+      "mon": ["12:00-24:00"],
+      "tue": ["12:00-24:00"],
+      "wed": ["12:00-24:00"],
+      "thu": ["12:00-24:00"],
+      "fri": ["12:00-01:00"],
+      "sat": ["12:00-01:00"],
+      "sun": ["12:00-24:00"]
+    },
+    "timezone": "Asia/Jakarta",
+    "link": "https://linktr.ee/archalley"
+  },
+  {
+    "id": 18,
+    "name": "Port House Resto & Bar",
+    "image": "/images/places/18.jpg",
+    "imageCredit": {
+      "name": "Business owner"
+    },
+    "categories": ["bar", "restaurant"],
+    "lat": 1.1549873,
+    "lng": 103.9957591,
+    "address": "The Promenade Blok 8C, Harbour Bay Downtown, Jl. Duyung, Sungai Jodoh, Kec. Batu Ampar, Kota Batam",
+    "hours": {
+      "mon": ["16:00-24:00"],
+      "tue": ["16:00-24:00"],
+      "wed": ["16:00-24:00"],
+      "thu": ["16:00-24:00"],
+      "fri": ["12:00-01:00"],
+      "sat": ["12:00-01:30"],
+      "sun": ["12:00-24:00"]
+    },
+    "timezone": "Asia/Jakarta",
+    "link": "https://porthouse.id/"
+  },
+  {
+    "id": 19,
+    "name": "PoBA Bar",
+    "image": "/images/places/19.jpg",
+    "imageCredit": {
+      "name": "Business owner"
+    },
+    "categories": ["bar"],
+    "lat": 1.1522245,
+    "lng": 103.9986116,
+    "address": "Downtown Harbour Bay, Kelong 1, Kota Batam",
+    "hours": {
+      "mon": ["16:00-02:00"],
+      "tue": ["16:00-02:00"],
+      "wed": ["16:00-02:00"],
+      "thu": ["16:00-02:00"],
+      "fri": ["16:00-02:00"],
+      "sat": ["16:00-02:00"],
+      "sun": ["16:00-02:00"]
+    },
+    "timezone": "Asia/Jakarta"
+  },
+  {
+    "id": 20,
+    "name": "Kobie Coffee Pelita",
+    "image": "/images/places/20.jpg",
+    "imageCredit": {
+      "name": "Arina",
+      "url": "https://maps.google.com/maps/contrib/117023914340601371290"
+    },
+    "categories": ["cafe", "dessert"],
+    "lat": 1.144061,
+    "lng": 104.0182419,
+    "address": "Komp. Regency Park Blok I No. 40, Jl. Teuku Umar, Kp. Pelita, Kec. Lubuk Baja, Kota Batam",
+    "link": "https://www.instagram.com/kobiecoffee/"
+  },
+  {
+    "id": 21,
+    "name": "Anchor Cafe & Roastery",
+    "image": "/images/places/21.jpg",
+    "imageCredit": {
+      "name": "Business owner"
+    },
+    "categories": ["cafe"],
+    "lat": 1.1071017,
+    "lng": 104.0291893,
+    "address": "Dermaga Culinary Paradise RF No. 11, Sukajadi, Kec. Batam Kota, Kota Batam",
+    "hours": {
+      "mon": ["08:00-20:00"],
+      "tue": ["08:00-20:00"],
+      "wed": ["08:00-20:00"],
+      "thu": ["08:00-20:00"],
+      "fri": ["08:00-20:00"],
+      "sat": ["08:00-20:00"],
+      "sun": ["08:00-20:00"]
+    },
+    "timezone": "Asia/Jakarta",
+    "link": "https://www.facebook.com/anchorcafeandroastery/"
+  },
+  {
+    "id": 22,
+    "name": "Fryday Brew",
+    "image": "/images/places/22.jpg",
+    "imageCredit": {
+      "name": "Dean Stanton",
+      "url": "https://maps.google.com/maps/contrib/110787586800293934743"
+    },
+    "categories": ["cafe"],
+    "lat": 1.1467301,
+    "lng": 104.0082423,
+    "address": "Komp. Bumi Indah Blok 3 No. 34, Lubuk Baja Kota, Kec. Lubuk Baja, Kota Batam",
+    "hours": {
+      "mon": ["10:00-23:00"],
+      "tue": ["10:00-23:00"],
+      "wed": ["10:00-23:00"],
+      "thu": ["10:00-23:00"],
+      "fri": ["10:00-23:00"],
+      "sat": ["10:00-24:00"],
+      "sun": ["10:00-24:00"]
+    },
+    "timezone": "Asia/Jakarta"
   }
 ]
