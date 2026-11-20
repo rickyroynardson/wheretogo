@@ -24,6 +24,8 @@ export const id: Dictionary = {
     locating: "Mencari lokasimu…",
     noGeolocation: "Lokasi tidak tersedia di browser ini.",
     away: (distance) => `berjarak ${distance}`,
+    share: "Bagikan",
+    linkCopied: "Link disalin",
   },
   header: {
     toggleTheme: "Ganti tema",
@@ -108,6 +110,8 @@ export const id: Dictionary = {
   browser: {
     allPlaces: "Semua tempat",
     pickForMe: "Pilihkan satu",
+    shareResults: "Bagikan hasil ini",
+    shareText: "Beberapa tempat seru di Batam",
     from: (area) => `Dari ${area}`,
     leaving: (when) => `Berangkat ${when}`,
     view: "Tampilan",
@@ -153,6 +157,7 @@ export const id: Dictionary = {
     backTo: (plural) => `Kembali ke ${plural}`,
     photoBy: "Foto oleh:",
     navigate: "Rute",
+    shareText: (name) => `${name}, ketemu di WhereToGo`,
     about: "Tentang",
     goodToKnow: "Info tambahan",
     openingHours: "Jam buka",

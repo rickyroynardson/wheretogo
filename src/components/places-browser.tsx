@@ -22,6 +22,7 @@ import {
 import { useTripQuery } from "@/components/back-button";
 import { OpenStatus } from "@/components/open-status";
 import { PlacesMap } from "@/components/places-map";
+import { ShareButton } from "@/components/share-button";
 import { findArea } from "@/data/areas";
 import {
   CATEGORIES,
@@ -361,15 +362,24 @@ export function PlacesBrowser({ places }: { places: Place[] }) {
         </p>
       )}
 
-      <button
-        type="button"
-        onClick={pickForMe}
-        disabled={matches.length === 0}
-        className="mb-3 flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 font-medium text-primary-foreground disabled:cursor-not-allowed disabled:opacity-50"
-      >
-        <Dices className="size-5" aria-hidden />
-        {b.pickForMe}
-      </button>
+      <div className="mb-3 flex gap-2">
+        <button
+          type="button"
+          onClick={pickForMe}
+          disabled={matches.length === 0}
+          className="flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 font-medium text-primary-foreground disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          <Dices className="size-5" aria-hidden />
+          {b.pickForMe}
+        </button>
+        {/* Shares this exact list: filters, area and time are in the URL */}
+        <ShareButton
+          title={title}
+          text={b.shareText}
+          label={b.shareResults}
+          className="px-3"
+        />
+      </div>
 
       <div
         role="tablist"

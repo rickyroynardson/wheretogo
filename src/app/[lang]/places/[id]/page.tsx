@@ -6,6 +6,7 @@ import { Suspense } from "react";
 import { BackButton } from "@/components/back-button";
 import { LocalTimeNote, TripOpenStatus } from "@/components/open-status";
 import { OpeningHours } from "@/components/opening-hours";
+import { ShareButton } from "@/components/share-button";
 import { CATEGORIES, priceSymbol, TAGS } from "@/data/constants";
 import { PLACES, type Place } from "@/data/places";
 import type { I18n } from "@/i18n";
@@ -150,6 +151,14 @@ async function PlaceDetails({ params }: { params: Params }) {
           {place.link && (
             <PlaceLink url={place.link} name={place.name} i18n={i18n} />
           )}
+          <ShareButton
+            // The plain page: a friend's trip starts from their own spot
+            url={path(`/places/${place.id}`)}
+            title={place.name}
+            text={t.place.shareText(place.name)}
+            label={t.common.share}
+            className="px-4 py-3"
+          />
         </div>
       </section>
 

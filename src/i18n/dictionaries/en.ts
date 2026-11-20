@@ -25,6 +25,8 @@ export const en = {
     locating: "Getting your location…",
     noGeolocation: "Location isn't available in this browser.",
     away: (distance: string) => `${distance} away`,
+    share: "Share",
+    linkCopied: "Link copied",
   },
   header: {
     toggleTheme: "Toggle theme",
@@ -113,6 +115,8 @@ export const en = {
     allPlaces: "All places",
     // Opens one open, nearby place from the current results
     pickForMe: "Pick one for me",
+    shareResults: "Share these results",
+    shareText: "Some places to go in Batam",
     from: (area: string) => `From ${area}`,
     leaving: (when: string) => `Leaving ${when}`,
     view: "View",
@@ -158,6 +162,7 @@ export const en = {
     backTo: (plural: string) => `Back to ${plural}`,
     photoBy: "Photo by:",
     navigate: "Navigate",
+    shareText: (name: string) => `${name}, found on WhereToGo`,
     about: "About",
     goodToKnow: "Good to know",
     openingHours: "Opening hours",
