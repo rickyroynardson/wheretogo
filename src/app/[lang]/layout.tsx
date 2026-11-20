@@ -7,7 +7,9 @@ import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { I18nProvider } from "@/i18n/client";
 import { isLocale, LOCALES } from "@/i18n/config";
+import { pageMetadata } from "@/i18n/metadata";
 import { getI18n } from "@/i18n/server";
+import { SITE_NAME, siteUrl } from "@/lib/site";
 import "../globals.css";
 
 const atkinson = Atkinson_Hyperlegible_Next({
@@ -24,11 +26,19 @@ export function generateStaticParams() {
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-  const { t } = await getI18n();
+  const { t, locale } = await getI18n();
   return {
-    title: { default: "WhereToGo", template: "%s · WhereToGo" },
-    description: t.meta.description,
+    // Defaults for every page; pages override path, title and description
+    ...pageMetadata({
+      locale,
+      path: "/",
+      title: SITE_NAME,
+      description: t.meta.description,
+    }),
+    metadataBase: new URL(siteUrl()),
+    title: { default: SITE_NAME, template: `%s · ${SITE_NAME}` },
     icons: "/logo.svg",
+    twitter: { card: "summary_large_image" },
   };
 }
 

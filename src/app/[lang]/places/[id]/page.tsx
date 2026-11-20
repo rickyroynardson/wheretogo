@@ -10,7 +10,10 @@ import { ShareButton } from "@/components/share-button";
 import { CATEGORIES, priceSymbol, TAGS } from "@/data/constants";
 import { PLACES, type Place } from "@/data/places";
 import type { I18n } from "@/i18n";
+import { pageMetadata } from "@/i18n/metadata";
 import { getI18n } from "@/i18n/server";
+import { jsonLdHtml, placeJsonLd } from "@/lib/json-ld";
+import { siteUrl } from "@/lib/site";
 
 type Params = PageProps<"/[lang]/places/[id]">["params"];
 
@@ -31,7 +34,21 @@ export async function generateMetadata({
 }: PageProps<"/[lang]/places/[id]">): Promise<Metadata> {
   const place = findPlace((await params).id);
   if (!place) return {};
-  return { title: place.name, description: place.description };
+  const { t, locale } = await getI18n();
+  return pageMetadata({
+    locale,
+    path: `/places/${place.id}`,
+    title: place.name,
+    // No description yet: "Café · Jl. ..." still says what and where
+    description:
+      place.description ??
+      [
+        place.categories.map((c) => t.categories[c].label).join(", "),
+        place.address,
+      ]
+        .filter(Boolean)
+        .join(" · "),
+  });
 }
 
 // Reading params suspends, so it sits inside Suspense to keep navigation instant
@@ -61,6 +78,15 @@ async function PlaceDetails({ params }: { params: Params }) {
 
   return (
     <article className="flex flex-col gap-6 pt-2 pb-4">
+      <script
+        type="application/ld+json"
+        // biome-ignore lint/security/noDangerouslySetInnerHtml: JSON-LD, "<" escaped by jsonLdHtml
+        dangerouslySetInnerHTML={{
+          __html: jsonLdHtml(
+            placeJsonLd(place, siteUrl(), path(`/places/${place.id}`)),
+          ),
+        }}
+      />
       <BackButton
         fallback={path(`/places?view=list&category=${main}`)}
         label={t.place.backTo(plural)}

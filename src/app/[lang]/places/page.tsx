@@ -1,11 +1,17 @@
 import type { Metadata } from "next";
 import { PlacesView } from "@/components/places-view";
 import { PLACES } from "@/data/places";
+import { pageMetadata } from "@/i18n/metadata";
 import { getI18n } from "@/i18n/server";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const { t } = await getI18n();
-  return { title: t.browser.allPlaces };
+  const { t, locale } = await getI18n();
+  return pageMetadata({
+    locale,
+    path: "/places",
+    title: t.browser.allPlaces,
+    description: t.meta.description,
+  });
 }
 
 export default function AllPlacesPage() {
