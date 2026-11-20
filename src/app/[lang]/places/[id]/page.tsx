@@ -6,6 +6,7 @@ import { Suspense } from "react";
 import { BackButton } from "@/components/back-button";
 import { LocalTimeNote, TripOpenStatus } from "@/components/open-status";
 import { OpeningHours } from "@/components/opening-hours";
+import { SaveButton } from "@/components/save-button";
 import { ShareButton } from "@/components/share-button";
 import { CATEGORIES, priceSymbol, TAGS } from "@/data/constants";
 import { PLACES, type Place } from "@/data/places";
@@ -181,6 +182,11 @@ async function PlaceDetails({ params }: { params: Params }) {
           {place.link && (
             <PlaceLink url={place.link} name={place.name} i18n={i18n} />
           )}
+          <SaveButton
+            id={place.id}
+            name={place.name}
+            className="bg-muted px-4 py-3"
+          />
           <ShareButton
             // The plain page: a friend's trip starts from their own spot
             url={path(`/places/${place.id}`)}
@@ -260,7 +266,8 @@ function PlaceLink({
       className="flex shrink-0 items-center justify-center gap-2 rounded-xl bg-muted px-4 py-3 text-lg font-medium text-foreground"
     >
       <LinkIcon className="size-5" aria-hidden />
-      {social ?? t.place.website}
+      {/* Icon only on small phones, so Navigate, Save and Share fit one row */}
+      <span className="max-[480px]:hidden">{social ?? t.place.website}</span>
     </a>
   );
 }

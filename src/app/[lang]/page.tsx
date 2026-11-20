@@ -1,5 +1,6 @@
 import { ChevronRight, Map as MapIcon } from "lucide-react";
 import Link from "next/link";
+import { SavedLink } from "@/components/saved-link";
 import { TripWizard } from "@/components/trip-wizard";
 import { INTENTS, intentHasPlaces } from "@/data/intents";
 import { PLACES } from "@/data/places";
@@ -32,6 +33,7 @@ export default async function Home() {
           aria-hidden
         />
       </Link>
+      <SavedLink placeIds={PLACES.map((place) => place.id)} />
     </>
   );
 }

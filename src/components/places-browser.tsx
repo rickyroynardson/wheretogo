@@ -1,8 +1,8 @@
 "use client";
 
 import {
+  Bookmark,
   ChevronDown,
-  ChevronRight,
   Dices,
   Search,
   SlidersHorizontal,
@@ -22,6 +22,7 @@ import {
 import { useTripQuery } from "@/components/back-button";
 import { OpenStatus } from "@/components/open-status";
 import { PlacesMap } from "@/components/places-map";
+import { SaveButton } from "@/components/save-button";
 import { ShareButton } from "@/components/share-button";
 import { findArea } from "@/data/areas";
 import {
@@ -40,6 +41,7 @@ import { useI18n } from "@/i18n/client";
 import { distanceKm, formatDistance } from "@/lib/distance";
 import { openStatus } from "@/lib/opening";
 import { pickOne } from "@/lib/pick";
+import { useSaved } from "@/lib/saved";
 
 type Sort = "default" | "name" | "nearest";
 type Status = "open" | "closed";
@@ -77,7 +79,7 @@ const field =
 
 // All filter state lives in the URL:
 // ?view=list&category=cafe,mall&tags=wifi,work&price=2&q=kopi&status=open
-// &within=3&sort=nearest
+// &within=3&sort=nearest&saved=1
 export function PlacesBrowser({ places }: { places: Place[] }) {
   const params = useSearchParams();
   const { t, intl, path } = useI18n();
@@ -104,6 +106,11 @@ export function PlacesBrowser({ places }: { places: Place[] }) {
   const statusParam = params.get("status");
   const status: Status | null =
     statusParam === "open" || statusParam === "closed" ? statusParam : null;
+  // Only this browser's bookmarks; a shared link shows the friend's own
+  const onlySaved = params.get("saved") === "1";
+  const saved = useSaved();
+  // Bookmarks of places since removed from the data don't count
+  const savedCount = places.filter((p) => saved.includes(p.id)).length;
   const withinParam = Number(params.get("within"));
   const within = DISTANCES.includes(withinParam) ? withinParam : null;
   // Trip context from the home flow: a starting area and a leaving time
@@ -213,6 +220,7 @@ export function PlacesBrowser({ places }: { places: Place[] }) {
         ) {
           return false;
         }
+        if (onlySaved && !saved.includes(place.id)) return false;
         // Tags narrow down: a place needs every picked one
         if (tags.some((tag) => !place.tags?.includes(tag))) return false;
         // Unknown price doesn't fit a budget
@@ -236,6 +244,8 @@ export function PlacesBrowser({ places }: { places: Place[] }) {
   }, [
     places,
     query,
+    onlySaved,
+    saved,
     categories,
     tags,
     maxPrice,
@@ -261,13 +271,14 @@ export function PlacesBrowser({ places }: { places: Place[] }) {
     return sorted;
   }, [matches, sort, origin]);
 
+  // Saved has its own button, so it isn't in the Filters badge
   const activeFilters =
     (categories.length ? 1 : 0) +
     (tags.length ? 1 : 0) +
     (maxPrice ? 1 : 0) +
     (status ? 1 : 0) +
     (within ? 1 : 0);
-  const filtered = query.trim() !== "" || activeFilters > 0;
+  const filtered = query.trim() !== "" || activeFilters > 0 || onlySaved;
 
   // "Cafés & Malls" when categories are picked, else "All places"
   const title = categories.length
@@ -311,6 +322,7 @@ export function PlacesBrowser({ places }: { places: Place[] }) {
   const clearAll = () =>
     setParams({
       q: null,
+      saved: null,
       category: null,
       tags: null,
       price: null,
@@ -320,6 +332,7 @@ export function PlacesBrowser({ places }: { places: Place[] }) {
 
   // Short summary of active filters for the map pill
   const summary = [
+    onlySaved ? t.saved.filter : null,
     ...categories.map((c) => t.categories[c].label),
     ...tags.map((tag) => t.tags[tag]),
     maxPrice ? priceSymbol(maxPrice) : null,
@@ -418,6 +431,23 @@ export function PlacesBrowser({ places }: { places: Place[] }) {
                 className="w-full rounded-xl bg-muted py-2.5 pr-3 pl-9 text-base outline-none placeholder:text-muted-foreground focus:ring-2 focus:ring-primary"
               />
             </label>
+            {/* Shown once something is saved, or while the filter is on */}
+            {(savedCount > 0 || onlySaved) && (
+              <button
+                type="button"
+                aria-pressed={onlySaved}
+                onClick={() => setParams({ saved: onlySaved ? null : "1" })}
+                title={t.saved.filter}
+                className="flex cursor-pointer items-center gap-1.5 rounded-xl bg-muted px-3 text-sm font-medium aria-pressed:bg-primary aria-pressed:text-primary-foreground"
+              >
+                <Bookmark
+                  className={`size-4 ${onlySaved ? "fill-current" : ""}`}
+                  aria-hidden
+                />
+                <span className="sr-only">{t.saved.filter}</span>
+                {savedCount}
+              </button>
+            )}
             <button
               type="button"
               aria-expanded={showFilters}
@@ -665,7 +695,11 @@ export function PlacesBrowser({ places }: { places: Place[] }) {
           </ul>
         ) : (
           <p className="py-4 text-sm text-muted-foreground">
-            {filtered ? b.noMatches : b.empty}
+            {onlySaved && savedCount === 0
+              ? t.saved.empty
+              : filtered
+                ? b.noMatches
+                : b.empty}
           </p>
         )}
       </div>
@@ -869,10 +903,11 @@ function PlaceItem({
     .join(" · ");
 
   return (
-    <li className="border-b border-border last:border-b-0">
+    // The bookmark sits beside the link, not inside it: no button in an <a>
+    <li className="flex items-center gap-1 border-b border-border last:border-b-0">
       <Link
         href={path(`/places/${place.id}${tripQuery}`)}
-        className="group flex items-center gap-3 py-4"
+        className="group flex min-w-0 flex-1 items-center gap-3 py-4"
       >
         {place.image ? (
           <Image
@@ -916,12 +951,12 @@ function PlaceItem({
             <p className="line-clamp-2 text-sm">{place.description}</p>
           )}
         </div>
-
-        <ChevronRight
-          className="size-4 shrink-0 text-muted-foreground"
-          aria-hidden
-        />
       </Link>
+      <SaveButton
+        id={place.id}
+        name={place.name}
+        className="size-11 hover:bg-muted"
+      />
     </li>
   );
 }

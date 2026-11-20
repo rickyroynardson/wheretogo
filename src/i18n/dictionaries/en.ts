@@ -177,6 +177,17 @@ export const en = {
     localTime: (timezone: string) =>
       `Times are local to the place (${timezone})`,
   },
+  // Bookmarks, kept in this browser only
+  saved: {
+    save: (name: string) => `Save ${name}`,
+    saveShort: "Save",
+    saved: "Saved",
+    // Filter toggle in the places list
+    filter: "Saved",
+    homeLink: (count: number) =>
+      `${count} saved ${count === 1 ? "place" : "places"}`,
+    empty: "Nothing saved yet. Tap the bookmark on a place to keep it here.",
+  },
   hours: {
     days: {
       mon: "Monday",

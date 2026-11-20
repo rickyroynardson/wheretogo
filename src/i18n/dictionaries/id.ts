@@ -170,6 +170,15 @@ export const id: Dictionary = {
     localTime: (timezone) =>
       `Waktu mengikuti zona waktu tempat ini (${timezone})`,
   },
+  saved: {
+    save: (name) => `Simpan ${name}`,
+    saveShort: "Simpan",
+    saved: "Tersimpan",
+    filter: "Tersimpan",
+    homeLink: (count) => `${count} tempat tersimpan`,
+    empty:
+      "Belum ada yang disimpan. Ketuk ikon bookmark di sebuah tempat untuk menyimpannya.",
+  },
   hours: {
     days: {
       mon: "Senin",
